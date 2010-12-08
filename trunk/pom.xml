@@ -136,9 +136,32 @@
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
+						<manifestEntries>
+							<Implementation-Build>${buildNumber}</Implementation-Build>
+							<Built-on>${timestamp}</Built-on>
+							<SCM-Revision>${buildNumber}</SCM-Revision>
+						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<timestampFormat>{0,date,dd-MM-yyyy HH:mm:ss}</timestampFormat>
+					<doCheck>true</doCheck>
+					<doUpdate>true</doUpdate>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
 				<executions>
@@ -365,13 +388,6 @@
 
 	<dependencies>
 		<!-- compile and runtime dependencies -->
-
-		<dependency>
-			<groupId>com.servicelibre</groupId>
-			<artifactId>common-lib</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -446,7 +462,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- test dependencies -->		
+		<!-- test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
