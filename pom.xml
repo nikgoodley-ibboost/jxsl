@@ -28,7 +28,7 @@
 
 	<scm>
 		<connection>scm:svn:http://jxsl.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://jxsl.googlecode.com/svn/trunk</developerConnection>
+		<developerConnection>scm:svn:https://benoit.mercibe@gmail.com:PV3Dr6FD4wM2@jxsl.googlecode.com/svn/trunk</developerConnection>
 		<url>http://code.google.com/p/jxsl/source/browse/</url>
 	</scm>
 
