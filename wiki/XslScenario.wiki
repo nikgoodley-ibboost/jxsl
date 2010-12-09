@@ -5,12 +5,6 @@
 
 = Use cases =
 
-==Junit test embedded in a Java project==
-==TestNG test embedded in a Java project==
-==No Java project - dedicated maven project==
-==No Java project - dedicated ant project==
 
 =Continuous Integration=
-
-
 
