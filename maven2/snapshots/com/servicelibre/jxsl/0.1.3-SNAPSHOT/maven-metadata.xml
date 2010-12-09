@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.servicelibre</groupId>
+  <artifactId>jxsl</artifactId>
+  <version>0.1.3-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <lastUpdated>20101209150958</lastUpdated>
+  </versioning>
+</metadata>
