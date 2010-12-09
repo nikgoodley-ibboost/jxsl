@@ -19,7 +19,7 @@
 	<properties>
 		<jdk.version>1.6</jdk.version>
 		<logback.version>0.9.26</logback.version>
-		<saxon.version>9.3.0.1j</saxon.version>
+		<saxon.version>9.3.0.2j</saxon.version>
 		<spring.version>3.0.5.RELEASE</spring.version>
 	</properties>
 
@@ -437,7 +437,8 @@
 			<version>1.6.1</version>
 		</dependency>
 
-		<!-- Saxon: external dependency: cf. Michael Kay - There is no authorised 
+		<!-- 
+		   Saxon: external dependency: cf. Michael Kay - There is no authorised 
 			copy of Saxon available from any public Maven repository. Any copy that you 
 			do find is unauthorised and possibly illegal. The reason for this is that 
 			Saxon incorporates a number of third-party components, such as the Unicode 
@@ -445,14 +446,36 @@
 			certain legal notices to be distributed with every copy of the binary software. 
 			Maven, as far as I have been able to determine, provides no mechanism to 
 			ensure that when people download the JAR file, they also get these notices. 
-			Therefore, distribution via Maven contravenes these licensing conditions. -->
+			Therefore, distribution via Maven contravenes these licensing conditions. 
+			
+			So, here is what to do.
+			
+			1. Download desired version of Saxon from http://saxon.sourceforge.net]
+			2. Upload the Saxon jar file either to your local repository or to your company's
+			maven proxy (Nexus, etc.)
+			
+			mvn install:install-file  -Dfile=path-to-your-saxon-jar \
+			                          -DgroupId=net.sf.saxon \
+			                          -DartifactId=saxon \
+			                          -Dversion=your-saxon-version \
+			                          -Dpackaging=jar \
+			                          -DgeneratePom=true
+			
+			Example :
+			
+			mvn install:install-file  -Dfile=/opt/saxon/saxonhe9-3-0-2j/saxon9he.jar \
+			                          -DgroupId=net.sf.saxon \
+			                          -DartifactId=saxon \
+			                          -Dversion=9.3.0.2j \
+			                          -Dpackaging=jar \
+			                          -DgeneratePom=true
+			
+			
+			-->
 		<dependency>
 			<groupId>net.sf.saxon</groupId>
 			<artifactId>saxon</artifactId>
 			<version>${saxon.version}</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/saxon/saxonhe9-3-0-2j/saxon9he.jar
-			</systemPath>
 		</dependency>
 
 		<dependency>
