@@ -462,15 +462,27 @@
 			                          -DgeneratePom=true
 			
 			Example :
-			
-			mvn install:install-file  -Dfile=/opt/saxon/saxonhe9-3-0-2j/saxon9he.jar \
-			                          -DgroupId=net.sf.saxon \
-			                          -DartifactId=saxon \
-			                          -Dversion=9.3.0.2j \
-			                          -Dpackaging=jar \
-			                          -DgeneratePom=true
-			
-			
+					
+					mvn install:install-file  -Dfile=/opt/saxon/saxonhe9-3-0-2j/saxon9he.jar \
+					                          -DgroupId=net.sf.saxon \
+					                          -DartifactId=saxon \
+					                          -Dversion=9.3.0.2j \
+					                          -Dpackaging=jar \
+					                          -DgeneratePom=true
+					
+					rEFERENCE: http://maven.apache.org/plugins/maven-install-plugin/usage.html
+					
+			or to an internal remote repository :
+		
+					mvn deploy:deploy-file    -Durl=http://yourserver/repositories/thirdparty \
+					                          -DrepositoryId=thirdparty \
+					                          -Dfile=/opt/saxon/saxonhe9-3-0-2j/saxon9he.jar \
+					                          -DgroupId=net.sf.saxon \
+					                          -DartifactId=saxon \
+					                          -Dversion=9.3.0.2j \
+					                          -Dpackaging=jar \
+					                          -DgeneratePom=true
+					Reference: http://maven.apache.org/plugins/maven-deploy-plugin/usage.html
 			-->
 		<dependency>
 			<groupId>net.sf.saxon</groupId>
@@ -490,7 +502,7 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.7</version>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
