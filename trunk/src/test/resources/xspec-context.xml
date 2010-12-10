@@ -41,7 +41,7 @@
 	</bean>
 
 
-	<!-- Plumbing -->
+	<!-- Mandatory plumbing -->
 
 	<bean id="xspecTestSuiteRunner"
 		class="com.servicelibre.jxsl.scenario.test.xspec.XspecTestSuiteRunner">

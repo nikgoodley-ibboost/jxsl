@@ -174,6 +174,10 @@ public class XslScenario {
 	public Map<String, String> apply(String xmlString) {
 		return apply(xmlString.getBytes(), "");
 	}
+	
+	public Map<String, String> apply(byte[] xmlBytes) {
+	    return apply(xmlBytes, "");
+	}
 
 	public Map<String, String> apply(String xmlString, String charsetName) {
 		Map<String, String> outputs = new HashMap<String, String>();
