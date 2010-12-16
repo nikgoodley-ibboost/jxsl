@@ -39,6 +39,10 @@ import com.servicelibre.jxsl.scenario.test.XslTestScenarioRunner;
 public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
 	static Logger logger = LoggerFactory.getLogger(XspecTestScenarioRunner.class);
+	
+	static {
+	    System.setProperty("javax.xml.transform.TransformerFactory", XslScenario.SAXON_TRANSFORMER_FACTORY_FQCN);
+	}
 
 	private File outputDir = new File(System.getProperty("java.io.tmpdir"));
 	private XslScenario xspecTestsGeneratorScenario;
@@ -114,7 +118,7 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
 		if (xspecResultHtmlConvertorScenario != null) {
 			xspecResultHtmlConvertorScenario.getTransformer().reset();
-			xspecResultHtmlConvertorScenario.setOutputSavedOnDisk(true);
+			xspecResultHtmlConvertorScenario.setSaveOutputOnDisk(true);
 			xspecResultHtmlConvertorScenario.setMainOutputDir(xmlResultFile.getParentFile());
 			xspecResultHtmlConvertorScenario.setName("htmlConvertor");
 			xspecResultHtmlConvertorScenario.setMainOutputName(xmlResultFile.getName().replace(".xml", ".html"));
@@ -138,9 +142,10 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 		XslScenario xspecTests = new XslScenario(generatedTestFile);
 
 		xspecTests.getTransformer().reset();
-		xspecTests.setOutputSavedOnDisk(true);
+		xspecTests.setSaveOutputOnDisk(true);
 		xspecTests.setMainOutputDir(generatedTestFile.getParentFile());
-		xspecTests.setRunReportSavedOnDisk(true);
+		xspecTests.setSaveRunReport(true);
+		xspecTests.setSaveXmlSource(true);
 		xspecTests.setMainOutputName(xspecFile.getName().replace(".xspec", "-result.xml"));
 		xspecTests.setInitialTemplate("{http://www.jenitennison.com/xslt/xspec}main");
 		xspecTests.setName("xmlResults");
@@ -163,10 +168,10 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 		xspecTestsGeneratorScenario.getTransformer().reset();
 		
 		xspecTestsGeneratorScenario.setMainOutputDir(outputDir);
-		xspecTestsGeneratorScenario.setUseTimeStampedSubDir(true);
+		xspecTestsGeneratorScenario.setSubDirTimeStamp(true);
 		xspecTestsGeneratorScenario.setName("xspec");
 		xspecTestsGeneratorScenario.setMainOutputName(xspecFile.getName().replace(".xspec", ".xslt"));
-		xspecTestsGeneratorScenario.setOutputSavedOnDisk(true);
+		xspecTestsGeneratorScenario.setSaveOutputOnDisk(true);
 
 		xspecTestsGeneratorScenario.apply(xspecFile);
 		

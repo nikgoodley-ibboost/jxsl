@@ -20,25 +20,22 @@
 
 package com.servicelibre.jxsl.scenario.test;
 
-public class FailureReport {
+public class FailureReport
+{
     public String failureMessage;
-	public String expectedValue;
-	public String butWasValue;
-	
+    
     public FailureReport(String failureMessage)
     {
         super();
         this.failureMessage = failureMessage;
     }
 
-    public FailureReport(String expectedValue, String butWasValue)
+    @Override
+    public String toString()
     {
-        super();
-        this.expectedValue = expectedValue;
-        this.butWasValue = butWasValue;
+        StringBuilder sb = new StringBuilder("");
+        sb.append(failureMessage);
+        return sb.toString();
     }
-    
-    
-	
-	
+
 }

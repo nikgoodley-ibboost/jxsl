@@ -21,12 +21,17 @@
 package com.servicelibre.jxsl.scenario.test.xspec;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -38,6 +43,8 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.xml.SimpleNamespaceContext;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import com.servicelibre.jxsl.scenario.RunReport;
 import com.servicelibre.jxsl.scenario.test.FailureReport;
@@ -67,6 +74,8 @@ public class XspecTestSuiteRunner implements XslTestSuiteRunner
     private XPathExpression testFailedCount;
 
     private XPathExpression testCount;
+
+    private DocumentBuilder xmlBuilder;
 
     public XspecTestSuiteRunner(File xspecTestsGeneratorFile)
     {
@@ -101,6 +110,18 @@ public class XspecTestSuiteRunner implements XslTestSuiteRunner
             logger.error("Error while initializing {}.", this.getClass().getName(), e);
         }
 
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setNamespaceAware(true);
+
+        try
+        {
+            xmlBuilder = docFactory.newDocumentBuilder();
+        }
+        catch (ParserConfigurationException e)
+        {
+            logger.error("Error while configuring XML parser", e);
+        }
+
     }
 
     public TestReport run(File xspecTestFile)
@@ -112,6 +133,7 @@ public class XspecTestSuiteRunner implements XslTestSuiteRunner
         if (runReport != null)
 
         {
+
             testReport.executionTime = runReport.executionTime;
             testReport.executionDate = runReport.executionDate;
 
@@ -131,6 +153,28 @@ public class XspecTestSuiteRunner implements XslTestSuiteRunner
                 logger.error("Error while converting test report File to URL.", e);
             }
 
+            try
+            {
+
+                Document xspecResultDoc = xmlBuilder.parse(runReport.mainOutputFile);
+
+                testReport.testCount = ((Double)testCount.evaluate(xspecResultDoc, XPathConstants.NUMBER)).intValue();
+                testReport.testFailedCount = ((Double) testFailedCount.evaluate(xspecResultDoc, XPathConstants.NUMBER)).intValue();
+
+            }
+            catch (SAXException e)
+            {
+                logger.error("Error while creating failure report", e);
+            }
+            catch (IOException e)
+            {
+                logger.error("Error while creating failure report", e);
+            }
+            catch (XPathExpressionException e)
+            {
+                logger.error("Error while evaluating XPath during failure report creation", e);
+            }
+
         }
         else
         {
@@ -141,16 +185,10 @@ public class XspecTestSuiteRunner implements XslTestSuiteRunner
         return testReport;
     }
 
-
+    //TODO ????
     private FailureReport getFailureReport(File mainOutputFile)
     {
-        FailureReport failureReport = new FailureReport("Test failed to run.  See error log.");
-
-        // TODO implement  
-        // failureReport.testFailedCount;
-
-        // count(//x:test)
-        // failureReport.testCount;
+        FailureReport failureReport = new FailureReport("XSpec Test failed to run.  See error log.");
 
         return failureReport;
     }

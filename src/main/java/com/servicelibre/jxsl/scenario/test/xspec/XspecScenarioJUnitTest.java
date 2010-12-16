@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -63,6 +62,9 @@ import com.servicelibre.jxsl.scenario.test.TestReport;
  *  }
  *   
  *}
+ *
+ * The easiest way to do is to use the Maven archetype provided by jxsl.  To learn how to
+ * use the xspec-test Maven archetype please read http://code.google.com/p/jxsl/w/list  
  * 
  * </pre>
  * 
@@ -73,20 +75,22 @@ import com.servicelibre.jxsl.scenario.test.TestReport;
 public class XspecScenarioJUnitTest
 {
 
-    File xspecFile;
+    private static final String XSPEC_TEST_SUITE_RUNNER_BEAN_ID = "xspecTestSuiteRunner";
+
+    public final static String SPRING_CONTEXT_FILENAME = "xspec-context.xml";
 
     private static XspecTestSuiteRunner xspecSuiteRunner;
-
-    public final static String ctxFileName = "classpath:/xspec-context.xml";
 
     private static TestReport testReport;
 
     static
     {
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(ctxFileName);
-        xspecSuiteRunner = (XspecTestSuiteRunner) ctx.getBean("xspecTestSuiteRunner");
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(SPRING_CONTEXT_FILENAME);
+        xspecSuiteRunner = (XspecTestSuiteRunner) ctx.getBean(XSPEC_TEST_SUITE_RUNNER_BEAN_ID);
 
     }
+
+    protected File xspecFile;
 
     public XspecScenarioJUnitTest(File xspecFile)
     {
@@ -103,18 +107,26 @@ public class XspecScenarioJUnitTest
     }
 
     @Test
-    @Ignore  //TODO reactivate!
     public void assertXspecResults()
     {
 
         assertNotNull(testReport);
 
-        assertTrue(testReport.success);
+        if (!testReport.success)
+        {
+            System.err.println(testReport);
+        }
+        else
+        {
+            System.out.println(testReport);
+        }
 
-        assertTrue("X tests sur Y ont échoués.  Rapport détaillé disponible ici:", testReport.success);
+        StringBuilder sb = new StringBuilder();
+        sb.append(testReport.testFailedCount).append(" test(s) on ").append(testReport.testCount).append(" failed. ");
+                
+        sb.append("See detailed report at ").append(testReport.reportUrl);
 
-        // TODO show testReport (toString) and assert results
-        // TEST
+        assertTrue(sb.toString(), testReport.success);
 
     }
 

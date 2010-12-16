@@ -106,7 +106,7 @@ public class ScenarioTest
         assertEquals("test01-xslt2.output", sc.getMainOutputName());
 
         File xmlFile = new File(testResources.get("test01.xml").getURI());
-        sc.setOutputSavedOnDisk(true);
+        sc.setSaveOutputOnDisk(true);
 
         sc.apply(xmlFile);
         RunReport lastRunReport = sc.getLastRunReport();
