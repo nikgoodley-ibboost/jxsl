@@ -23,11 +23,21 @@ package com.servicelibre.jxsl.scenario;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-public class RunReport {
+public class RunReport
+{
+    // IN
+    public String transformer;
+    public String xslSourceUrl;
+    public Map<String, Object> parameters;
+    public String xmlSourceUrl;
+
+    // OUT
     public Date executionDate;
-	public long executionTime;
-	public File mainOutputFile;
-	public List<File> otherOutputFiles;
+    public long executionTime;
+    public String SIUnit;
+    public File mainOutputFile;
+    public List<File> otherOutputFiles;
 
 }

@@ -23,13 +23,32 @@ package com.servicelibre.jxsl.scenario.test;
 import java.net.URL;
 import java.util.Date;
 
-public class TestReport {
+public class TestReport
+{
 
-	public boolean success;
-	public Date executionDate;
-	public long executionTime;
-	public URL reportUrl;
-	public FailureReport failureReport;
-	
-	
+    public boolean success;
+    public Date executionDate;
+    public long executionTime;
+    
+    public int testCount;
+    public int testFailedCount;
+    
+    
+    public URL reportUrl;
+    public FailureReport failureReport;
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("TestReport\n----------\n");
+        sb.append("Success: ").append(success).append("\n");
+        sb.append("Date: ").append(executionDate).append("\n");
+        sb.append("Duration: ").append(executionTime).append("\n");
+        sb.append("Detailed report URL: ").append(reportUrl).append("\n");
+        if(!success) {
+            sb.append("Failure report: ").append(failureReport).append("\n");
+        }
+        return sb.toString();
+    }
+
 }
