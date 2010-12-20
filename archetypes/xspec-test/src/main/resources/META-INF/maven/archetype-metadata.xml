@@ -9,12 +9,6 @@
         <include>**/*.java</include>
       </includes>
     </fileSet>
-    <fileSet filtered="true" encoding="UTF-8">
-      <directory>src/main/resources</directory>
-      <includes>
-        <include>**/*.txt</include>
-      </includes>
-    </fileSet>
     <fileSet encoding="UTF-8">
       <directory>src/main/resources</directory>
       <includes>
@@ -28,12 +22,6 @@
         <include>**/*.java</include>
       </includes>
     </fileSet>    
-    <fileSet filtered="true" encoding="UTF-8">
-      <directory>src/test/resources</directory>
-      <includes>
-        <include>**/*.xml</include>
-      </includes>
-    </fileSet>
     <fileSet encoding="UTF-8">
       <directory>src/test/resources</directory>
       <includes>
