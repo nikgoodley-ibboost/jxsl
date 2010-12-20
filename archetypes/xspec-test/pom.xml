@@ -14,6 +14,82 @@
 
   <name>jxsl-archetype</name>
 
+	<!-- Source code versionning system -->
+
+	<scm>
+		<connection>scm:svn:http://jxsl.googlecode.com/svn</connection>
+		<developerConnection>scm:svn:https://jxsl.googlecode.com/svn</developerConnection>
+		<url>http://code.google.com/p/jxsl/source/browse</url>
+	</scm>
+	
+	<!-- Project details -->
+
+	<organization>
+		<name>Service libre</name>
+		<url>http://servicelibre.com</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License, Version 3.0</name>
+			<url>http://www.gnu.org/licenses/lgpl.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>benoit.mercier</id>
+			<name>Benoit Mercier</name>
+			<email>benoit.mercibe@gmail.com</email>
+			<organization>Service libre</organization>
+			<organizationUrl>http://servicelibre.com</organizationUrl>
+			<timezone>+5</timezone>
+			<roles>
+				<role>project administrator</role>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
+	
+		<issueManagement>
+		<system>Google Code</system>
+		<url>http://code.google.com/p/jxsl/issues/list</url>
+	</issueManagement>
+
+	<ciManagement />
+
+	<mailingLists>
+		<mailingList>
+			<name>jxsl</name>
+			<subscribe>jxsl-subscribe@googlegroups.com</subscribe>
+			<unsubscribe>jxsl-unsubscribe@googlegroups.com</unsubscribe>
+			<archive>http://groups.google.com/group/jxsl</archive>
+		</mailingList>
+	</mailingLists>
+	
+		<!-- Distributions -->
+
+	<distributionManagement>
+		<repository>
+			<id>jxsl</id>
+			<name>Alternate Maven repository of releases</name>
+			<url>dav:https://jxsl.googlecode.com/svn/maven2/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>jxsl-snapshots</id>
+			<name>Alternate Maven repository of snapshots</name>
+			<url>dav:https://jxsl.googlecode.com/svn/maven2/snapshots</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+		<site>
+			<id>jxsl-website</id>
+			<name>jxsl website</name>
+			<url>file://${basedir}/target/dist/site</url>
+		</site>
+	</distributionManagement>	
+
+
   <build>
     <extensions>
       <extension>
@@ -21,8 +97,12 @@
         <artifactId>archetype-packaging</artifactId>
         <version>2.0</version>
       </extension>
-    </extensions>
-
+      <extension>
+		<groupId>org.apache.maven.wagon</groupId>
+		<artifactId>wagon-webdav</artifactId>
+		<version>1.0-beta-2</version>
+  	  </extension>
+	</extensions>
     <pluginManagement>
       <plugins>
         <plugin>
