@@ -1,4 +1,11 @@
+#summary XslUnitTesting with jxsl and XSpec
+
 = Introduction =
+jxsl offers convenient ways to run XSpec tests from Java code in order to easily integrate XSL unit testing into your Java Continuous Integration process.
+
+Provided helper classes could be run standalone but... (to be continued)
+
+
 
 <wiki:comment>
 To enable XSL unit testing with Xspec and JUnit in your own project (build with Ant, Maven, etc.), simply create a new class in your test package that extends XspecScenarioJUnitTest. Here is a complete and functional implementation.  For other options (TestNG implementation, standalone project, etc.), please read XslUnitTesting wiki page.
