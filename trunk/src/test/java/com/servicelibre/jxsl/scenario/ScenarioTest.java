@@ -63,6 +63,10 @@ public class ScenarioTest
         File xmlFile = new File(testResources.get("test01.xml").getURI());
 
         XslScenario sc = new XslScenario();
+//        sc.setSaveOutputOnDisk(true);
+//        sc.setSaveRunReport(true);
+//        sc.setSubDirTimeStamp(true);
+//        sc.setSaveXmlSource(true);
 
         assertNull("xslPath MUST be null.", sc.getXslPath());
         assertNotNull("OutputURIResolver cannot be null.", sc.getOutputURIResolver());
@@ -123,6 +127,8 @@ public class ScenarioTest
      * - xsl with 2+ outputs: with params for href result-document, with and
      * without SL MultipleOutputURIResolver (are files saved as XSL wish?) -
      * with outputDir
+     * test output on disk
+     * sc.setSaveOutputOnDisk(true);
      */
 
 }
