@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 public class RunReport
 {
@@ -39,5 +40,7 @@ public class RunReport
     public String SIUnit;
     public File mainOutputFile;
     public List<File> otherOutputFiles;
+    public String transformerInfo;
+    public Properties outputProperties;
 
 }

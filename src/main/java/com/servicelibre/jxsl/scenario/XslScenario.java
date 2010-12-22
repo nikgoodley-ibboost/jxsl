@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.security.CodeSource;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -346,6 +348,8 @@ public class XslScenario
         runReport.transformer = getTransformerFactoryFQCN();
         // Watch out!  Not a deep copy...  Will only work safely if all values are String
         runReport.parameters = new HashMap<String, Object>(parameters);
+        runReport.outputProperties = transformer.getOutputProperties();
+        runReport.transformerInfo = getImplementationInfo(transformer.getClass());
         runReport.SIUnit = "ns";
         runReport.executionTime = executionTime;
         runReport.executionDate = startDate;
@@ -528,7 +532,7 @@ public class XslScenario
             try
             {
 
-                this.transformer = compileXsl().newTransformer();
+                this.transformer = getCompiledXsl().newTransformer();
 
                 // Saxon specific
                 if ((this.transformer instanceof net.sf.saxon.Controller))
@@ -575,7 +579,7 @@ public class XslScenario
         }
     }
 
-    private Templates compileXsl()
+    private Templates getCompiledXsl()
     {
         try
         {
@@ -644,6 +648,26 @@ public class XslScenario
     public String getTransformerFactoryFQCN()
     {
         return System.getProperty("javax.xml.transform.TransformerFactory", DEFAULT_TRANSFORMER_FACTORY);
+    }
+
+    public void setTransformerFactoryFQCN(String transformerFactoryFQCN)
+    {
+        System.setProperty("javax.xml.transform.TransformerFactory", transformerFactoryFQCN);
+
+        // To force new transformer factory creation
+        transformerFactory = null;
+        transformer = null;
+
+    }
+
+    public void useSaxonTransformer()
+    {
+        setTransformerFactoryFQCN(XslScenario.SAXON_TRANSFORMER_FACTORY_FQCN);
+    }
+
+    public void useXalanTransformer()
+    {
+        setTransformerFactoryFQCN(XslScenario.XALAN_TRANSFORMER_FACTORY_FQCN);
     }
 
     /**
@@ -810,6 +834,27 @@ public class XslScenario
     public void setSaveXmlSource(boolean saveXmlSource)
     {
         this.saveXmlSource = saveXmlSource;
+    }
+
+    private static String getImplementationInfo(Class<?> componentClass)
+    {
+
+        //TODO if Saxon, add info from productTitle.  Otherwise check jar manifest for Implementation-Version, Implementation-Vendor at least.
+        /*
+         * Name: org/apache/xalan/
+            Comment: Main Xalan engine implementing TrAX/JAXP
+            Specification-Title: Java API for XML Processing
+            Specification-Vendor: Sun Microsystems Inc.
+            Specification-Version: 1.3
+            Implementation-Title: org.apache.xalan
+            Implementation-Version: 2.7.1
+            Implementation-Vendor: Apache Software Foundation
+            Implementation-URL: http://xml.apache.org/xalan-j/
+         */
+
+        CodeSource source = componentClass.getProtectionDomain().getCodeSource();
+        return MessageFormat.format("{0} [{1}]", componentClass.getName(), source == null ? "Java Runtime"
+                : source.getLocation());
     }
 
 }
