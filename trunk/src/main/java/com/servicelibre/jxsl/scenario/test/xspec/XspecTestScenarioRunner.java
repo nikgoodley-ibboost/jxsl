@@ -47,6 +47,8 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 	private File outputDir = new File(System.getProperty("java.io.tmpdir"));
 	private XslScenario xspecTestsGeneratorScenario;
 	private XslScenario xspecResultHtmlConvertorScenario;
+	
+	private boolean xspecResultDirTimeStamp = true;
 
 	public XspecTestScenarioRunner(File xspecTestsGeneratorFile) {
 		super();
@@ -168,7 +170,7 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 		xspecTestsGeneratorScenario.getTransformer().reset();
 		
 		xspecTestsGeneratorScenario.setMainOutputDir(outputDir);
-		xspecTestsGeneratorScenario.setSubDirTimeStamp(true);
+		xspecTestsGeneratorScenario.setSubDirTimeStamp(xspecResultDirTimeStamp);
 		xspecTestsGeneratorScenario.setName("xspec");
 		xspecTestsGeneratorScenario.setMainOutputName(xspecFile.getName().replace(".xspec", ".xslt"));
 		xspecTestsGeneratorScenario.setSaveOutputOnDisk(true);
@@ -202,5 +204,15 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 		}
 		
 	}
+
+    public boolean isXspecResultDirTimeStamp()
+    {
+        return xspecResultDirTimeStamp;
+    }
+
+    public void setXspecResultDirTimeStamp(boolean xspecResultDirTimeStamp)
+    {
+        this.xspecResultDirTimeStamp = xspecResultDirTimeStamp;
+    }
 
 }
