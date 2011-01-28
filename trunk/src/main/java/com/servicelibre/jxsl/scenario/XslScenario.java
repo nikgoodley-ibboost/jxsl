@@ -755,10 +755,8 @@ public class XslScenario
             logger.info("Creation of output directory {}.", mainOutputDir);
             mainOutputDir.mkdirs();
         }
-        else
-        {
-            this.mainOutputDir = mainOutputDir;
-        }
+        
+        this.mainOutputDir = mainOutputDir;
     }
 
     public boolean getSaveOutputOnDisk()
