@@ -33,4 +33,6 @@ public interface XslTestScenarioRunner {
 	public TestReport getLastRunReport();
 
 	public RunReport run(File xspecFile);
+	
+	public RunReport run(File xspecFile, File testOutputDir);
 }

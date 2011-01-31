@@ -122,6 +122,8 @@ public class XslScenario
 
     private SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd-HHmmss-S");
 
+    private boolean resultsSubDirWithTimeStamp = true;
+
     private String timestamp;
 
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -132,7 +134,7 @@ public class XslScenario
 
     private boolean saveXmlSource;
 
-    private boolean subDirTimeStamp;
+    private boolean storeResultsInSubDir;
 
     /* Constructors */
     public XslScenario()
@@ -313,7 +315,7 @@ public class XslScenario
     private File saveXmlSourceFile(byte[] xmlBytes)
     {
 
-        File xmlSourceFile = new File(this.getCurrentOutputDir(), XMLSOURCE_FILENAME);
+        File xmlSourceFile = new File(this.getCurrentOutputDir(), getName() + "_" + XMLSOURCE_FILENAME);
         try
         {
             FileUtils.writeByteArrayToFile(xmlSourceFile, xmlBytes);
@@ -448,7 +450,7 @@ public class XslScenario
     {
         if (isValidOutputDir())
         {
-            saveXmlDocToFile(asXml(runReport), new File(currentOuputDir, "runReport.xml"));
+            saveXmlDocToFile(asXml(runReport), new File(currentOuputDir, this.getName() + "_runReport.xml"));
         }
     }
 
@@ -495,9 +497,16 @@ public class XslScenario
 
         File currentOuputDir = null;
 
-        if (subDirTimeStamp)
+        if (storeResultsInSubDir)
         {
-            currentOuputDir = new File(mainOutputDir, getTimestamp() + "-" + getName());
+            if (resultsSubDirWithTimeStamp)
+            {
+                currentOuputDir = new File(mainOutputDir, getTimestamp() + "-" + getName());
+            }
+            else
+            {
+                currentOuputDir = new File(mainOutputDir, getName());
+            }
         }
         else
         {
@@ -755,7 +764,7 @@ public class XslScenario
             logger.info("Creation of output directory {}.", mainOutputDir);
             mainOutputDir.mkdirs();
         }
-        
+
         this.mainOutputDir = mainOutputDir;
     }
 
@@ -814,14 +823,14 @@ public class XslScenario
         this.saveRunReport = saveRunReport;
     }
 
-    public boolean getSubDirTimeStamp()
+    public boolean getStoreResultsInSubDir()
     {
-        return subDirTimeStamp;
+        return storeResultsInSubDir;
     }
 
-    public void setSubDirTimeStamp(boolean subDirTimeStamp)
+    public void setStoreResultsInSubDir(boolean storeResultsInSubDir)
     {
-        this.subDirTimeStamp = subDirTimeStamp;
+        this.storeResultsInSubDir = storeResultsInSubDir;
     }
 
     public boolean isSaveXmlSource()
@@ -851,8 +860,18 @@ public class XslScenario
          */
 
         CodeSource source = componentClass.getProtectionDomain().getCodeSource();
-        return MessageFormat.format("{0} [{1}]", componentClass.getName(), source == null ? "Java Runtime"
-                : source.getLocation());
+        return MessageFormat.format("{0} [{1}]", componentClass.getName(),
+                source == null ? "Java Runtime" : source.getLocation());
+    }
+
+    public boolean isResultsSubDirWithTimeStamp()
+    {
+        return resultsSubDirWithTimeStamp;
+    }
+
+    public void setResultsSubDirWithTimeStamp(boolean resultsSubDirWithTimeStamp)
+    {
+        this.resultsSubDirWithTimeStamp = resultsSubDirWithTimeStamp;
     }
 
 }
