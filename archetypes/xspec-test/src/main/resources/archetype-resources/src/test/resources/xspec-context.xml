@@ -78,13 +78,17 @@
 		<constructor-arg ref="xspecTestScenarioRunner" />
 		<property name="files" ref="xspecFiles" />
 		<property name="directories" ref="xspecDirectories" />
+		<property name="outputDir" ref="outputDir"/>
+		<property name="storeResultsInSubDir" value="true"/>
+		<property name="resultsSubDirWithTimeStamp" value="true"/>
 	</bean>
-	
+
 	<bean id="xspecTestScenarioRunner"
 		class="com.servicelibre.jxsl.scenario.test.xspec.XspecTestScenarioRunner">
 		<constructor-arg ref="xspecMainXsl" />
 		<property name="xspecResultHtmlConvertorScenario" ref="xspecReportToHTMLScenario" />
-		<property name="outputDir" ref="outputDir"/>
+		<property name="storeResultsInSubDir" value="true"/>
+		<property name="resultsSubDirWithTimeStamp" value="false"/>
 	</bean>
 	
 	<bean id="xspecReportToHTMLScenario" class="com.servicelibre.jxsl.scenario.XslScenario">
