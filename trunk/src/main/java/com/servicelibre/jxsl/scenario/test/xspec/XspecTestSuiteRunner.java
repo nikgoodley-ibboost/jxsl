@@ -23,7 +23,9 @@ package com.servicelibre.jxsl.scenario.test.xspec;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -59,6 +61,8 @@ import com.servicelibre.jxsl.scenario.test.XslTestSuiteRunner;
 public class XspecTestSuiteRunner implements XslTestSuiteRunner
 
 {
+    private static final String DEFAULT_RESULTS_DIR_NAME = "XspecTestSuiteRunner";
+
     private static final Logger logger = LoggerFactory.getLogger(XspecTestSuiteRunner.class);
 
     private List<File> testFiles = new ArrayList<File>();
@@ -67,6 +71,9 @@ public class XspecTestSuiteRunner implements XslTestSuiteRunner
     private IOFileFilter fileFilter = TrueFileFilter.TRUE;
     private IOFileFilter directoryFilter = TrueFileFilter.TRUE;
 
+    private boolean storeResultsInSubDir = true;
+    private boolean resultsSubDirWithTimeStamp = false;
+    
     XspecTestScenarioRunner xspecRunner;
 
     private XPathExpression successXpath;
@@ -76,6 +83,12 @@ public class XspecTestSuiteRunner implements XslTestSuiteRunner
     private XPathExpression testCount;
 
     private DocumentBuilder xmlBuilder;
+    
+
+    private String resultsDirName = DEFAULT_RESULTS_DIR_NAME;
+    private File outputDir = new File(System.getProperty("java.io.tmpdir"));
+    private String timeStamp;
+    private SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd-HHmmss-S");
 
     public XspecTestSuiteRunner(File xspecTestsGeneratorFile)
     {
@@ -91,6 +104,8 @@ public class XspecTestSuiteRunner implements XslTestSuiteRunner
     public void init()
     {
 
+        this.timeStamp = df.format(new Date());
+        
         setFileFilter(FileFilterUtils.suffixFileFilter("xspec"));
         XPath xpath = XPathFactory.newInstance().newXPath();
 
@@ -128,7 +143,7 @@ public class XspecTestSuiteRunner implements XslTestSuiteRunner
     {
         TestReport testReport = new TestReport();
 
-        RunReport runReport = xspecRunner.run(xspecTestFile);
+        RunReport runReport = xspecRunner.run(xspecTestFile, getOutputDir());
 
         if (runReport != null)
 
@@ -183,6 +198,26 @@ public class XspecTestSuiteRunner implements XslTestSuiteRunner
         }
 
         return testReport;
+    }
+
+    private File getOutputDir()
+    {
+        if (storeResultsInSubDir)
+        {
+            // All xspec results will be under a common timestamped directory
+            if(resultsSubDirWithTimeStamp)
+            {
+                return new File(outputDir, this.timeStamp + "-" + resultsDirName);
+            }
+            else {
+                return new File(outputDir, resultsDirName);
+            }
+        }
+        else
+        {
+            // Xspec results will be stored directly under outputdir
+            return outputDir;
+        }
     }
 
     //TODO ????
@@ -269,6 +304,51 @@ public class XspecTestSuiteRunner implements XslTestSuiteRunner
     public void setDirectoryFilter(IOFileFilter directoryFilter)
     {
         this.directoryFilter = directoryFilter;
+    }
+
+    public String getTimeStamp()
+    {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(String timeStamp)
+    {
+        this.timeStamp = timeStamp;
+    }
+
+    public void setOutputDir(File outputDir)
+    {
+        this.outputDir = outputDir;
+    }
+
+    public String getDefaultResultsDirName()
+    {
+        return resultsDirName;
+    }
+
+    public void setDefaultResultsDirName(String resultsDirName)
+    {
+        this.resultsDirName = resultsDirName;
+    }
+
+    public boolean isResultsSubDirWithTimeStamp()
+    {
+        return resultsSubDirWithTimeStamp;
+    }
+
+    public void setResultsSubDirWithTimeStamp(boolean resultsSubDirWithTimeStamp)
+    {
+        this.resultsSubDirWithTimeStamp = resultsSubDirWithTimeStamp;
+    }
+
+    public boolean isStoreResultsInSubDir()
+    {
+        return storeResultsInSubDir;
+    }
+
+    public void setStoreResultsInSubDir(boolean storeResultsInSubDir)
+    {
+        this.storeResultsInSubDir = storeResultsInSubDir;
     }
 
 }
