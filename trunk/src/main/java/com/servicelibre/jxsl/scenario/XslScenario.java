@@ -240,12 +240,19 @@ public class XslScenario
         multipleOutputs.clearResults();
 
         xslOutputs.put(mainOutputKey, "");
+        
+        // TODO can do better, but as fast?
+        if(xmlBytes.length <= 10) {
+        	logger.warn("No enough bytes to apply XSL on...");
+        	return xslOutputs;
+        }
+        
         try
         {
 
             setTimestamp(df.format(new Date()));
 
-            logger.debug("Going to execute [{}]", this.xslPath);
+            logger.debug("Going to execute [{}], on a document of {} bytes", this.xslPath, xmlBytes.length);
 
             // Pass parameters to XSL
             for (String paramName : parameters.keySet())
