@@ -5,18 +5,20 @@ import org.slf4j.LoggerFactory;
 
 import com.servicelibre.jxsl.scenario.XslScenario;
 
+// TODO how to embed in Junit test??
 public class XslTestEngine {
 
 	static Logger logger = LoggerFactory.getLogger(XslScenario.class);
 
 	private DocumentSource docSource;
 
-	private XslTestSuite xslTestSuite;
+	//TODO move to a List<XslOutputValidation> xslOutputValidations
+	private XslOutputValidation xslOutputValidation;
 
-	public XslTestEngine(DocumentSource docSource, XslTestSuite xslTestSuite) {
+	public XslTestEngine(DocumentSource docSource, XslOutputValidation xslOutputValidation) {
 		super();
 		this.docSource = docSource;
-		this.xslTestSuite = xslTestSuite;
+		this.xslOutputValidation = xslOutputValidation;
 	}
 
 	public DocumentSource getDocSource() {
@@ -33,15 +35,17 @@ public class XslTestEngine {
 		// Get all files Ids to process
 		if (docSource != null) {
 
-			if (xslTestSuite != null) {
+			if (xslOutputValidation != null) {
 
 				for (DocumentId documentId : docSource.getDocumentIds()) {
+				    
+				    //TODO loop on all xslOutputValidation
 
-					processedFilesCount += xslTestSuite.run(docSource.getDocument(documentId));
+					processedFilesCount += xslOutputValidation.run(docSource.getDocument(documentId));
 
 				}
 			} else {
-				logger.warn("There is no outputValidator available for this XslTestSuite.");
+				logger.warn("There is no outputValidator available for this XslOutputValidation.");
 			}
 
 		} else {
@@ -51,12 +55,12 @@ public class XslTestEngine {
 		return processedFilesCount;
 	}
 
-	public XslTestSuite getXslTestSuite() {
-		return xslTestSuite;
+	public XslOutputValidation getXslOutputValidation() {
+		return xslOutputValidation;
 	}
 
-	public void setXslTestSuite(XslTestSuite xslTestSuite) {
-		this.xslTestSuite = xslTestSuite;
+	public void setXslOutputValidation(XslOutputValidation xslOutputValidation) {
+		this.xslOutputValidation = xslOutputValidation;
 	}
 
 }

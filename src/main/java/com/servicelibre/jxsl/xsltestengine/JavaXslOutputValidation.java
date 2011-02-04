@@ -8,20 +8,20 @@ import org.slf4j.LoggerFactory;
 
 import com.servicelibre.jxsl.scenario.XslScenario;
 
-public class XslJavaTestSuite implements XslTestSuite {
+public class JavaXslOutputValidation implements XslOutputValidation {
 
-	static Logger logger = LoggerFactory.getLogger(XslJavaTestSuite.class);
+	static Logger logger = LoggerFactory.getLogger(JavaXslOutputValidation.class);
 
 	private XslScenario xslScenario;
 	private List<OutputValidator> outputValidators;
 	private String ouputNameToValidate;
 
-	public XslJavaTestSuite(XslScenario scenario, List<OutputValidator> outputValidators) {
+	public JavaXslOutputValidation(XslScenario scenario, List<OutputValidator> outputValidators) {
 
 		this(scenario, XslScenario.MAIN_OUTPUT_KEY, outputValidators);
 	}
 
-	public XslJavaTestSuite(XslScenario scenario, String ouputNameToValidate, List<OutputValidator> outputValidators) {
+	public JavaXslOutputValidation(XslScenario scenario, String ouputNameToValidate, List<OutputValidator> outputValidators) {
 
 		this.xslScenario = scenario;
 		this.ouputNameToValidate = ouputNameToValidate;
@@ -47,15 +47,25 @@ public class XslJavaTestSuite implements XslTestSuite {
 	public int run(Document xmlDoc) {
 		
 		logger.debug("Going to validate the transformation output of {} through {} validators...", xmlDoc.id + "["+xslScenario+"]", outputValidators.size());
+
+		int successCount = 0;
+		int failureCount = 0;
 		
 		Map<String, String> result = xslScenario.apply(xmlDoc.getFile());
 		String output = result.get(XslScenario.MAIN_OUTPUT_KEY);
 		
 		for (OutputValidator outputValidator : outputValidators) {
-			outputValidator.isValid(output);
+		    logger.debug("Running validaton [{}]...", outputValidator.getName());
+			if(outputValidator.isValid(output)){
+			    successCount++;
+			}
+			else {
+			    logger.warn("{} - validation failed: {}", outputValidator.getName(), outputValidator.getMessage());
+			    failureCount--; 
+			}
 		}
 
-		return 0;
+		return failureCount < 0? failureCount : successCount;
 	}
 
 	public List<OutputValidator> getOutputValidators() {
