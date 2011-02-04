@@ -18,9 +18,11 @@
  * along with jxsl.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.servicelibre.jxsl.scenario.test.xspec;
+package xspec;
 
 import java.io.File;
+
+import com.servicelibre.jxsl.scenario.test.xspec.XspecScenarioJUnitTest;
 
 public class XspecUnitTesting extends XspecScenarioJUnitTest
 {

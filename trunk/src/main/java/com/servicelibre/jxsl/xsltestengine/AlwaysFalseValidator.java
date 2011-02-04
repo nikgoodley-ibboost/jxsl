@@ -21,7 +21,7 @@ public class AlwaysFalseValidator implements OutputValidator {
 
 	@Override
 	public boolean isValid(String output) {
-		return true;
+		return false;
 	}
 
 	@Override

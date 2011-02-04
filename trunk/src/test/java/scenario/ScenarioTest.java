@@ -18,7 +18,7 @@
  * along with jxsl.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.servicelibre.jxsl.scenario;
+package scenario;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -34,6 +34,9 @@ import org.junit.runner.RunWith;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.servicelibre.jxsl.scenario.RunReport;
+import com.servicelibre.jxsl.scenario.XslScenario;
 
 @ContextConfiguration(locations="classpath:ScenarioTest-context.xml")
 @RunWith(SpringJUnit4ClassRunner.class)

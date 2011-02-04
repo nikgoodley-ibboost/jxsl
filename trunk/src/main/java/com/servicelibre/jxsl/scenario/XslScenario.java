@@ -232,10 +232,16 @@ public class XslScenario
      */
     public Map<String, String> apply(byte[] xmlBytes, String systemId)
     {
+        
+        Map<String, String> xslOutputs = new HashMap<String, String>(1);
 
         Transformer transformer = getTransformer();
+        
+        if(transformer == null) {
+            logger.warn("No transformer available for xslPath {}", xslPath);
+            return xslOutputs;
+        }
 
-        Map<String, String> xslOutputs = new HashMap<String, String>(1);
 
         multipleOutputs.clearResults();
 
@@ -246,6 +252,7 @@ public class XslScenario
         	logger.warn("No enough bytes to apply XSL on...");
         	return xslOutputs;
         }
+        
         
         try
         {
