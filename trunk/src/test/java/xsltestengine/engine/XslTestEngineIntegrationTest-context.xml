@@ -5,9 +5,9 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
 
-	<!-- rootFolder -->
+	<!-- Document rootFolder -->
 	<bean id="rootFolderResource" class="org.springframework.core.io.ClassPathResource">
-		<constructor-arg value="xsltestengine" />
+		<constructor-arg value="xsltestengine-data" />
 	</bean>
 
 	<util:list id="fileExtensions">
@@ -19,32 +19,49 @@
 
 	<!-- Xsl URL -->
 	<bean id="xslScenarioResource" class="org.springframework.core.io.ClassPathResource">
-		<constructor-arg value="xsltestengine/toHtmlWithIds.xsl" />
+		<constructor-arg value="xsltestengine-data/toHtmlWithIds.xsl" />
 	</bean>
-	
-	<!-- JavaXslOutputValidation -->
-	<util:list id="outputValidators" list-class="java.util.ArrayList"
-		value-type="com.servicelibre.jxsl.xsltestengine.OuputValidator">
-		<bean class="com.servicelibre.jxsl.xsltestengine.AlwaysTrueValidator"/>
-		<bean class="com.servicelibre.jxsl.xsltestengine.AlwaysFalseValidator"/>
+
+	<!-- Output Validations -->
+	<util:list id="outputValidations" list-class="java.util.ArrayList"
+		value-type="com.servicelibre.jxsl.xsltestengine.XslOutputValidation">
+		<ref bean="outputValidation1" />
+		<ref bean="outputValidation2" />
 	</util:list>
-	
+
+	<!-- JavaXslOutputValidation1 -->
+	<util:list id="outputValidators1"
+		value-type="com.servicelibre.jxsl.xsltestengine.OuputValidator">
+		<bean class="com.servicelibre.jxsl.xsltestengine.AlwaysTrueValidator" />
+		<bean class="com.servicelibre.jxsl.xsltestengine.AlwaysFalseValidator" />
+	</util:list>
+	<bean id="outputValidation1"
+		class="com.servicelibre.jxsl.xsltestengine.JavaXslOutputValidation">
+		<constructor-arg ref="xslScenario" />
+		<constructor-arg ref="outputValidators1" />
+	</bean>
+
+	<!-- JavaXslOutputValidation2 -->
+	<util:list id="outputValidators2"
+		value-type="com.servicelibre.jxsl.xsltestengine.OuputValidator">
+		<bean class="com.servicelibre.jxsl.xsltestengine.AlwaysFalseValidator" />
+		<bean class="com.servicelibre.jxsl.xsltestengine.AlwaysFalseValidator" />
+	</util:list>
+	<bean id="outputValidation2"
+		class="com.servicelibre.jxsl.xsltestengine.JavaXslOutputValidation">
+		<constructor-arg ref="xslScenario" />
+		<constructor-arg ref="outputValidators2" />
+	</bean>
+
+
+
 
 	<!-- Plumbing -->
 
-	
-	<bean id="engine"
-		class="com.servicelibre.jxsl.xsltestengine.XslTestEngine">
-		<constructor-arg ref="documentSource"/>
-		<constructor-arg ref="outputValidation"/>
-	</bean>
 
-
-
-	<bean id="outputValidation"
-		class="com.servicelibre.jxsl.xsltestengine.JavaXslOutputValidation">
-		<constructor-arg ref="xslScenario" />
-		<constructor-arg ref="outputValidators"/>
+	<bean id="engine" class="com.servicelibre.jxsl.xsltestengine.XslTestEngine">
+		<property name="docSource" ref="documentSource" />
+		<property name="xslOutputValidations" ref="outputValidations" />
 	</bean>
 
 	<bean id="xslScenario" class="com.servicelibre.jxsl.scenario.XslScenario">
