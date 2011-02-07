@@ -31,7 +31,7 @@ public class XslTestEngineTest
     @BeforeClass
     public static void init()
     {
-        URL rootFolderUrl = ClassLoader.getSystemResource("xsltestengine");
+        URL rootFolderUrl = ClassLoader.getSystemResource("xsltestengine-data");
 
         try
         {
@@ -85,7 +85,7 @@ public class XslTestEngineTest
     public XslOutputValidation getXslOutputValidation()
     {
 
-        URL xslUrl = ClassLoader.getSystemResource("xsltestengine/toHtmlWithIds.xsl");
+        URL xslUrl = ClassLoader.getSystemResource("xsltestengine-data/toHtmlWithIds.xsl");
         XslScenario scenario = new XslScenario(xslUrl);
 
         List<OutputValidator> outputValidators = new ArrayList<OutputValidator>();
