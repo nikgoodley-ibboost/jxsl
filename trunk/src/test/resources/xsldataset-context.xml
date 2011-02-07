@@ -33,7 +33,7 @@
 	<util:list id="outputValidators1"
 		value-type="com.servicelibre.jxsl.dstest.OuputValidator">
 		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysTrueValidator" />
-		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator" />
+		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysTrueValidator" />
 	</util:list>
 	<bean id="outputValidation1"
 		class="com.servicelibre.jxsl.dstest.validations.JavaXslOutputValidation">
@@ -44,7 +44,7 @@
 	<!-- JavaXslOutputValidation2 -->
 	<util:list id="outputValidators2"
 		value-type="com.servicelibre.jxsl.dstest.OuputValidator">
-		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator" />
+		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysTrueValidator" />
 		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator" />
 	</util:list>
 	<bean id="outputValidation2"
@@ -59,7 +59,7 @@
 	<!-- Plumbing -->
 
 
-	<bean id="engine" class="com.servicelibre.jxsl.dstest.XslDataSetRunner">
+	<bean id="xslDataSetRunner" class="com.servicelibre.jxsl.dstest.XslDataSetRunner">
 		<property name="docSource" ref="documentSource" />
 		<property name="xslOutputValidations" ref="outputValidations" />
 	</bean>

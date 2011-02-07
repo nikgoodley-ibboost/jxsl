@@ -10,7 +10,7 @@ import java.net.URL;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.servicelibre.jxsl.xsltestengine.FolderDocumentSource;
+import com.servicelibre.jxsl.dstest.sources.FolderDocumentSource;
 
 /**
  * Unit tests for the FolderDocumentSource class that verify

@@ -1,4 +1,4 @@
-package com.servicelibre.jxsl.xsltestengine;
+package com.servicelibre.jxsl.dstest.sources;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,6 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+
+import com.servicelibre.jxsl.dstest.Document;
+import com.servicelibre.jxsl.dstest.DocumentId;
 
 public class FolderDocumentSource  implements DocumentSource {
 

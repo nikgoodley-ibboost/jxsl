@@ -1,4 +1,4 @@
-package com.servicelibre.jxsl.xsltestengine;
+package com.servicelibre.jxsl.dstest;
 
 import java.io.File;
 

@@ -12,16 +12,16 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.servicelibre.jxsl.dstest.DocumentId;
+import com.servicelibre.jxsl.dstest.XslDataSetRunner;
+import com.servicelibre.jxsl.dstest.sources.DocumentSource;
+import com.servicelibre.jxsl.dstest.sources.FolderDocumentSource;
+import com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator;
+import com.servicelibre.jxsl.dstest.validations.AlwaysTrueValidator;
+import com.servicelibre.jxsl.dstest.validations.JavaXslOutputValidation;
+import com.servicelibre.jxsl.dstest.validations.OutputValidator;
+import com.servicelibre.jxsl.dstest.validations.XslOutputValidation;
 import com.servicelibre.jxsl.scenario.XslScenario;
-import com.servicelibre.jxsl.xsltestengine.AlwaysFalseValidator;
-import com.servicelibre.jxsl.xsltestengine.AlwaysTrueValidator;
-import com.servicelibre.jxsl.xsltestengine.DocumentId;
-import com.servicelibre.jxsl.xsltestengine.DocumentSource;
-import com.servicelibre.jxsl.xsltestengine.FolderDocumentSource;
-import com.servicelibre.jxsl.xsltestengine.JavaXslOutputValidation;
-import com.servicelibre.jxsl.xsltestengine.OutputValidator;
-import com.servicelibre.jxsl.xsltestengine.XslOutputValidation;
-import com.servicelibre.jxsl.xsltestengine.XslTestEngine;
 
 public class XslTestEngineTest
 {
@@ -64,10 +64,10 @@ public class XslTestEngineTest
     public void basicXslTestEngine()
     {
 
-        XslTestEngine engine = new XslTestEngine(getDocumentSource(), getXslOutputValidation());
+        XslDataSetRunner engine = new XslDataSetRunner(getDocumentSource(), getXslOutputValidation());
 
         // TODO return a list of runReport or something similar?
-        int run = engine.run();
+        int run = engine.runAll();
 
         assertNotNull(run);
         
