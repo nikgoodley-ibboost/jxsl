@@ -1,4 +1,6 @@
-package com.servicelibre.jxsl.xsltestengine;
+package com.servicelibre.jxsl.dstest.validations;
+
+import com.servicelibre.jxsl.dstest.Document;
 
 
 public interface XslOutputValidation {

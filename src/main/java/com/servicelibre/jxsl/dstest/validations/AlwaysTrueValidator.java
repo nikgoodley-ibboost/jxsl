@@ -1,4 +1,4 @@
-package com.servicelibre.jxsl.xsltestengine;
+package com.servicelibre.jxsl.dstest.validations;
 
 public class AlwaysTrueValidator implements OutputValidator {
 	

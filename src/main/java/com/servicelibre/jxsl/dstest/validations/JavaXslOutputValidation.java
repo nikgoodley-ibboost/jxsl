@@ -1,4 +1,4 @@
-package com.servicelibre.jxsl.xsltestengine;
+package com.servicelibre.jxsl.dstest.validations;
 
 import java.util.List;
 import java.util.Map;
@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.servicelibre.jxsl.dstest.Document;
 import com.servicelibre.jxsl.scenario.XslScenario;
 
 public class JavaXslOutputValidation implements XslOutputValidation {
@@ -45,7 +46,9 @@ public class JavaXslOutputValidation implements XslOutputValidation {
 
 	@Override
 	public int run(Document xmlDoc) {
-		
+
+	    ValidationReport validationReport = new ValidationReport(this);
+	    
 		logger.debug("Going to validate the transformation output of {} through {} validators...", xmlDoc.id + "["+xslScenario+"]", outputValidators.size());
 
 		int successCount = 0;
@@ -61,6 +64,7 @@ public class JavaXslOutputValidation implements XslOutputValidation {
 			}
 			else {
 			    logger.warn("{} - validation failed: {}", outputValidator.getName(), outputValidator.getMessage());
+			    
 			    failureCount--; 
 			}
 		}

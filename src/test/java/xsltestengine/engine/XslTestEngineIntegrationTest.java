@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.servicelibre.jxsl.xsltestengine.DocumentSource;
-import com.servicelibre.jxsl.xsltestengine.XslTestEngine;
+import com.servicelibre.jxsl.dstest.XslDataSetRunner;
+import com.servicelibre.jxsl.dstest.sources.DocumentSource;
 
 /**
  * A system test that verifies the components of the XslTestEngine framework
@@ -28,7 +28,7 @@ public class XslTestEngineIntegrationTest
 
     // The object being tested
     @Autowired
-    private XslTestEngine engine;
+    private XslDataSetRunner engine;
 
     @Autowired
     private File rootFolder;
@@ -48,7 +48,7 @@ public class XslTestEngineIntegrationTest
         
         assertNotNull(engine);
         // TODO return a list of runReport or something similar?
-        int run = engine.run();
+        int run = engine.runAll();
 
         assertNotNull(run);
         
