@@ -8,11 +8,11 @@ import com.servicelibre.jxsl.dstest.DocumentId;
 public class ValidationReport
 {
 
-    protected XslOutputValidation outputValidation;
+    protected XslValidation outputValidation;
     public List<ValidationFailure> failures = new ArrayList<ValidationFailure>();
 	private DocumentId documentId;
 
-    public ValidationReport(XslOutputValidation outputValidation, DocumentId documentId)
+    public ValidationReport(XslValidation outputValidation, DocumentId documentId)
     {
         super();
         this.outputValidation = outputValidation;
@@ -33,6 +33,10 @@ public class ValidationReport
 
 	public void setDocumentId(DocumentId documentId) {
 		this.documentId = documentId;
+	}
+	
+	public boolean isValidationSuccessful() {
+	    return failures.size() == 0;
 	}
 
 

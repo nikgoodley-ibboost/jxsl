@@ -22,6 +22,7 @@ package com.servicelibre.jxsl.scenario.test;
 
 import java.io.File;
 
+import com.servicelibre.jxsl.dstest.Document;
 import com.servicelibre.jxsl.scenario.RunReport;
 
 public interface XslTestScenarioRunner {
@@ -32,7 +33,7 @@ public interface XslTestScenarioRunner {
 
 	public TestReport getLastRunReport();
 
-	public RunReport run(File xspecFile);
+	public TestReport run(File xspecFile);
 	
-	public RunReport run(File xspecFile, File testOutputDir);
+	public TestReport run(File xspecFile, File testOutputDir, Document xmlDoc);
 }

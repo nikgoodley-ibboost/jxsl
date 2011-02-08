@@ -13,114 +13,115 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.servicelibre.jxsl.dstest.DocumentId;
+import com.servicelibre.jxsl.dstest.XslDataSetJUnitTest;
 import com.servicelibre.jxsl.dstest.XslDataSetRunner;
 import com.servicelibre.jxsl.dstest.sources.DocumentSource;
 import com.servicelibre.jxsl.dstest.sources.FolderDocumentSource;
 import com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator;
 import com.servicelibre.jxsl.dstest.validations.AlwaysTrueValidator;
-import com.servicelibre.jxsl.dstest.validations.JavaXslOutputValidation;
+import com.servicelibre.jxsl.dstest.validations.JavaXslValidation;
 import com.servicelibre.jxsl.dstest.validations.OutputValidator;
-import com.servicelibre.jxsl.dstest.validations.ValidationFailure;
-import com.servicelibre.jxsl.dstest.validations.ValidationReport;
-import com.servicelibre.jxsl.dstest.validations.XslOutputValidation;
+import com.servicelibre.jxsl.dstest.validations.XslValidation;
 import com.servicelibre.jxsl.scenario.XslScenario;
+import com.servicelibre.jxsl.scenario.test.xspec.XspecTestScenarioRunner;
 
-public class XslTestEngineTest
-{
+public class XslTestEngineTest {
 
     private static File rootFolder;
+    private static File xspecXslGeneratorFile;
+    private static File xspecFile;
 
     @BeforeClass
-    public static void init()
-    {
-        URL rootFolderUrl = ClassLoader.getSystemResource("xsltestengine-data");
+    public static void init() {
+	
+	URL rootFolderUrl = ClassLoader.getSystemResource("xsltestengine-data");
+	URL xspecXslUrl = ClassLoader.getSystemResource("xspec/generate-xspec-tests.xsl");
+	URL xspecFileUrl = ClassLoader.getSystemResource("xspec/tutorial/encoding.xspec");
 
-        try
-        {
-            rootFolder = new File(rootFolderUrl.toURI());
-        }
-        catch (URISyntaxException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void basicDocumentSourceTest()
-    {
-
-        DocumentSource docSource = getDocumentSource();
-        List<DocumentId> documentIds = docSource.getDocumentIds();
-
-        assertNotNull("documentIds cannot be null", documentIds);
-        assertTrue("There must be at least one file in " + rootFolder, documentIds.size() > 0);
-
-        for (DocumentId id : documentIds)
-        {
-            System.out.println(id);
-        }
+	try {
+	    rootFolder = new File(rootFolderUrl.toURI());
+	    xspecXslGeneratorFile = new File(xspecXslUrl.toURI());
+	    xspecFile = new File(xspecFileUrl.toURI());
+	
+	} catch (URISyntaxException e) {
+	    e.printStackTrace();
+	}
+	
+	
 
     }
 
     @Test
-    public void basicXslTestEngine()
-    {
+    public void basicDocumentSourceTest() {
 
-        XslDataSetRunner engine = new XslDataSetRunner(getDocumentSource(), getXslOutputValidation());
+	DocumentSource docSource = getDocumentSource();
+	List<DocumentId> documentIds = docSource.getDocumentIds();
 
-        // TODO return a list of runReport or something similar?
-        assertEngineRun(engine.runAll());
+	assertNotNull("documentIds cannot be null", documentIds);
+	assertTrue("There must be at least one file in " + rootFolder, documentIds.size() > 0);
 
-     
-
-    }
-
-    public static void assertEngineRun(List<ValidationReport> validationReports) {
-
-    	boolean errors = false;
-    	
-    	assertNotNull(validationReports);
-    	
-        for(ValidationReport report : validationReports) {
-        	DocumentId documentId = report.getDocumentId();
-			assertNotNull(documentId);
-        	List<ValidationFailure> failures = report.getFailures();
-        	assertNotNull(failures);
-        	if(failures.size() > 0) {
-        		System.out.println("Some output validators failed for " + documentId);
-
-        		for(ValidationFailure failure : failures) {
-        			System.out.println(documentId + " => " + failure.getValidatorName() + ": " + failure.getMessage());
-        			errors = true;
-        		}
-
-        	}
-        }
-        assertTrue(errors);
-        
-		
+	for (DocumentId id : documentIds) {
+	    System.out.println(id);
 	}
 
-	public DocumentSource getDocumentSource()
-    {
-        // Create a new DocumentSource
-        return new FolderDocumentSource(rootFolder, new String[] { "xml" }, true);
+    }
+
+    /**
+     * Test the engine with on single OutputValidation (Java)
+     */
+    @Test
+    public void basicXslTestEngine() {
+
+	XslDataSetRunner engine = new XslDataSetRunner(getDocumentSource(), getJavaXslOutputValidation());
+
+	XslDataSetJUnitTest.assertEngineRun(engine.runAll());
 
     }
 
-    public XslOutputValidation getXslOutputValidation()
-    {
+    /**
+     * Test the engine with several OutputValidation (Java + Xspec)
+     */
+    @Test
+    public void completeXslTestEngine() {
+	List<XslValidation> outputValidations = new ArrayList<XslValidation>();
 
-        URL xslUrl = ClassLoader.getSystemResource("xsltestengine-data/toHtmlWithIds.xsl");
-        XslScenario scenario = new XslScenario(xslUrl);
+	outputValidations.add(getJavaXslOutputValidation());
+	outputValidations.add(getXspecValidation());
 
-        List<OutputValidator> outputValidators = new ArrayList<OutputValidator>();
-        outputValidators.add(new AlwaysTrueValidator());
-        outputValidators.add(new AlwaysFalseValidator());
+	XslDataSetRunner engine = new XslDataSetRunner(getDocumentSource(), outputValidations);
 
-        XslOutputValidation outputValidation = new JavaXslOutputValidation(scenario, outputValidators);
+	XslDataSetJUnitTest.assertEngineRun(engine.runAll());
 
-        return outputValidation;
+    }
+
+    public DocumentSource getDocumentSource() {
+	// Create a new DocumentSource
+	return new FolderDocumentSource(rootFolder, new String[] { "xml" }, true);
+
+    }
+
+    private XslValidation getXspecValidation() {
+
+	XspecTestScenarioRunner xspecRunner = new XspecTestScenarioRunner(xspecXslGeneratorFile);
+
+	XslValidation outputValidation = new XspecValidation(xspecRunner, xspecFile);
+
+	return outputValidation;
+    }
+
+    public XslValidation getJavaXslOutputValidation() {
+
+	URL xslUrl = ClassLoader.getSystemResource("xsltestengine-data/toHtmlWithIds.xsl");
+
+	XslScenario scenario = new XslScenario(xslUrl);
+
+	List<OutputValidator> outputValidators = new ArrayList<OutputValidator>();
+	outputValidators.add(new AlwaysTrueValidator());
+	outputValidators.add(new AlwaysFalseValidator());
+
+	XslValidation outputValidation = new JavaXslValidation(scenario, outputValidators);
+
+	return outputValidation;
     }
 
 }

@@ -8,10 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import com.servicelibre.jxsl.dstest.sources.DocumentSource;
 import com.servicelibre.jxsl.dstest.validations.ValidationReport;
-import com.servicelibre.jxsl.dstest.validations.XslOutputValidation;
+import com.servicelibre.jxsl.dstest.validations.XslValidation;
 import com.servicelibre.jxsl.scenario.XslScenario;
 
-// TODO how to embed in Junit test??
 public class XslDataSetRunner
 {
 
@@ -19,22 +18,22 @@ public class XslDataSetRunner
 
     private DocumentSource docSource;
 
-    private List<XslOutputValidation> xslOutputValidations;
+    private List<XslValidation> xslOutputValidations;
 
     public XslDataSetRunner()
     {
         super();
     }
 
-    public XslDataSetRunner(DocumentSource docSource, XslOutputValidation xslOutputValidation)
+    public XslDataSetRunner(DocumentSource docSource, XslValidation xslOutputValidation)
     {
         super();
         this.docSource = docSource;
-        xslOutputValidations = new ArrayList<XslOutputValidation>(1);
+        xslOutputValidations = new ArrayList<XslValidation>(1);
         xslOutputValidations.add(xslOutputValidation);
     }
 
-    public XslDataSetRunner(DocumentSource docSource, List<XslOutputValidation> xslOutputValidations)
+    public XslDataSetRunner(DocumentSource docSource, List<XslValidation> xslOutputValidations)
     {
         super();
         this.docSource = docSource;
@@ -62,7 +61,7 @@ public class XslDataSetRunner
             if (xslOutputValidations != null)
             {
 
-                for (XslOutputValidation outputValidation : xslOutputValidations)
+                for (XslValidation outputValidation : xslOutputValidations)
 
                 {
                 	// TODO Save document if requested (saveDocuments)
@@ -119,12 +118,12 @@ public class XslDataSetRunner
         return validationReports;
     }
 
-    public List<XslOutputValidation> getXslOutputValidations()
+    public List<XslValidation> getXslOutputValidations()
     {
         return xslOutputValidations;
     }
 
-    public void setXslOutputValidations(List<XslOutputValidation> xslOutputValidations)
+    public void setXslOutputValidations(List<XslValidation> xslOutputValidations)
     {
         this.xslOutputValidations = xslOutputValidations;
     }
