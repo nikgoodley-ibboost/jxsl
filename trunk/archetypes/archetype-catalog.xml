@@ -6,7 +6,7 @@
     <archetype>
       <groupId>com.servicelibre</groupId>
       <artifactId>xspec-test</artifactId>
-      <version>0.1.3</version>
+      <version>0.1.4</version>
       <repository>http://jxsl.googlecode.com/svn/maven2/releases</repository>
       <description>XSpec archetype for simple Maven + JUnit wrapper of XSpec tests</description>
     </archetype>

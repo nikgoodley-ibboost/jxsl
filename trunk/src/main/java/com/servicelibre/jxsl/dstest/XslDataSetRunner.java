@@ -65,7 +65,11 @@ public class XslDataSetRunner
                 for (XslOutputValidation outputValidation : xslOutputValidations)
 
                 {
+                	// TODO Save document if requested (saveDocuments)
+                	
                 	validationReports.add(outputValidation.run(docSource.getDocument(documentId)));
+                	
+                	// TODO append reports to csv output report (saveOutputs - All/ErrorOnly)
                 }
             }
             else
