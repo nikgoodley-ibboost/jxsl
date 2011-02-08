@@ -36,8 +36,8 @@ public class XslTestEngineTest {
 	
 	URL rootFolderUrl = ClassLoader.getSystemResource("xsltestengine-data");
 	URL xspecXslUrl = ClassLoader.getSystemResource("xspec/generate-xspec-tests.xsl");
-	URL xspecFileUrl = ClassLoader.getSystemResource("xspec/tutorial/encoding.xspec");
-
+	//URL xspecFileUrl = ClassLoader.getSystemResource("xspec/tutorial/encoding.xspec");
+	URL xspecFileUrl = ClassLoader.getSystemResource("xspec/tutorial/testHref.xspec");
 	try {
 	    rootFolder = new File(rootFolderUrl.toURI());
 	    xspecXslGeneratorFile = new File(xspecXslUrl.toURI());
@@ -46,8 +46,6 @@ public class XslTestEngineTest {
 	} catch (URISyntaxException e) {
 	    e.printStackTrace();
 	}
-	
-	
 
     }
 

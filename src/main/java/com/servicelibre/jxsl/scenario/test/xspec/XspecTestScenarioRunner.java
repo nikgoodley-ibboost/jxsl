@@ -53,6 +53,7 @@ import com.servicelibre.jxsl.scenario.test.XslTestScenarioRunner;
  */
 public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
+    private static final String JXSL_TEST_DOCUMENT_PLACEHOLDER = "file:/jxslTestDocument";
     static Logger logger = LoggerFactory.getLogger(XspecTestScenarioRunner.class);
 
     static {
@@ -137,17 +138,22 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
     @Override
     public TestReport run(File xspecFile, File testOutputDir) {
 	return run(xspecFile, testOutputDir, null);
-    }    
-    
-    
+    }
+
+    @Override
+    public TestReport run(File xspecFile, Document xmlDoc) {
+	return run(xspecFile, outputDir, xmlDoc);
+    }
+
     /**
      * 
      * TODO add optional Document parameter
      * 
-     * // TODO improve performance
-     * In order to improve performance, we should not regenerate/recompile xspec xsl.  We should instead compile it once and change/set
-     * parameter (document URL) at each execution.  This implies that we have to keep a compiled version of the Xsl for all runs 
-     * of the testScenario with the same xspec file.
+     * // TODO improve performance In order to improve performance, we should
+     * not regenerate/recompile xspec xsl. We should instead compile it once and
+     * change/set parameter (document URL) at each execution. This implies that
+     * we have to keep a compiled version of the Xsl for all runs of the
+     * testScenario with the same xspec file.
      */
     @Override
     public TestReport run(File xspecFile, File outputDir, Document xmlDoc) {
@@ -158,15 +164,17 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 	TestReport testReport = new TestReport();
 
 	// Generate custom test XSL
-	File generatedTestFile = generateTestFile(xspecFile).mainOutputFile;
+	RunReport generationReport = generateTestFile(xspecFile);
+	File generatedTestFile = generationReport.mainOutputFile;
 
 	if (generatedTestFile != null && generatedTestFile.exists()) {
 
-	    // TODO if Document parameter != null => filter content  => replace ${jxslTestDocument} by current Document path
-	    if(xmlDoc != null) {
-		xmlDoc.getFile();
+	    // TODO if Document parameter != null => filter content => replace
+	    // file:/jxslTestDocument by current Document path
+	    if (xmlDoc != null) {
+		filterGeneratedTestFile(generatedTestFile, xmlDoc.getFile().getAbsolutePath(), generationReport.outputProperties.getProperty("encoding"));
 	    }
-	    
+
 	    // Execute the xspec test
 	    testRunReport = executeTest(xspecFile, generatedTestFile);
 
@@ -225,6 +233,27 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 	}
 
 	return testReport;
+
+    }
+
+    private void filterGeneratedTestFile(File generatedTestFile, String absolutePath, String encoding) {
+	try {
+	    String fileString = FileUtils.readFileToString(generatedTestFile,encoding);
+	    String newContent = fileString.replaceAll(JXSL_TEST_DOCUMENT_PLACEHOLDER, absolutePath);
+
+	    String generatedTestFilePath = generatedTestFile.getAbsolutePath();
+	    File newFile = new File(generatedTestFilePath + ".new");
+
+	    FileUtils.writeStringToFile(newFile, newContent, encoding);
+	    FileUtils.deleteQuietly(generatedTestFile);
+
+	    if (!newFile.renameTo(new File(generatedTestFilePath))) {
+		logger.error("Error while renaming {} to {}", newFile, generatedTestFilePath);
+	    }
+
+	} catch (IOException e) {
+	    logger.error("Error while replacing jxslTestDocument placeholder", e);
+	}
 
     }
 
@@ -361,7 +390,5 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
 	return failureReport;
     }
-
-
 
 }
