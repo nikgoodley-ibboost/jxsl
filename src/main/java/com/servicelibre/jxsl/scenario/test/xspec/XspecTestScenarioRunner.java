@@ -134,6 +134,12 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 	return run(xspecFile, outputDir, null);
     }
 
+    @Override
+    public TestReport run(File xspecFile, File testOutputDir) {
+	return run(xspecFile, testOutputDir, null);
+    }    
+    
+    
     /**
      * 
      * TODO add optional Document parameter
@@ -355,5 +361,7 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
 	return failureReport;
     }
+
+
 
 }
