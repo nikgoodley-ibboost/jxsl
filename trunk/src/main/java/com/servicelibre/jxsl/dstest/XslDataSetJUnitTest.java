@@ -1,8 +1,5 @@
 package com.servicelibre.jxsl.dstest;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,6 +9,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import xsltestengine.engine.XslTestEngineTest;
 
 @RunWith(Parameterized.class)
 public class XslDataSetJUnitTest
@@ -54,9 +53,7 @@ public class XslDataSetJUnitTest
     public void dataSetValidationTest()
     {
 
-        int run = runner.run(documentId);
-        System.err.println(run);
-        assertTrue((run*-1) + " validations failed on this document (" + documentId + ")", run > 0);
+		XslTestEngineTest.assertEngineRun(runner.run(documentId));
 
     }
 

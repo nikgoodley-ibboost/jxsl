@@ -45,31 +45,25 @@ public class JavaXslOutputValidation implements XslOutputValidation {
 	}
 
 	@Override
-	public int run(Document xmlDoc) {
+	public ValidationReport run(Document xmlDoc) {
 
-	    ValidationReport validationReport = new ValidationReport(this);
+	    ValidationReport validationReport = new ValidationReport(this, xmlDoc.id);
 	    
 		logger.debug("Going to validate the transformation output of {} through {} validators...", xmlDoc.id + "["+xslScenario+"]", outputValidators.size());
 
-		int successCount = 0;
-		int failureCount = 0;
-		
 		Map<String, String> result = xslScenario.apply(xmlDoc.getFile());
 		String output = result.get(XslScenario.MAIN_OUTPUT_KEY);
 		
 		for (OutputValidator outputValidator : outputValidators) {
 		    logger.debug("Running validaton [{}]...", outputValidator.getName());
-			if(outputValidator.isValid(output)){
-			    successCount++;
-			}
-			else {
+			if(!outputValidator.isValid(output)){
 			    logger.warn("{} - validation failed: {}", outputValidator.getName(), outputValidator.getMessage());
-			    
-			    failureCount--; 
+			    ValidationFailure failure = new ValidationFailure(outputValidator.getName(), outputValidator.getMessage());
+			    validationReport.addValidationFailure(failure);
 			}
 		}
 
-		return failureCount < 0? failureCount : successCount;
+		return validationReport;
 	}
 
 	public List<OutputValidator> getOutputValidators() {

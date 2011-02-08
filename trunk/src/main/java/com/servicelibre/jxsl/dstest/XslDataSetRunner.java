@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.servicelibre.jxsl.dstest.sources.DocumentSource;
+import com.servicelibre.jxsl.dstest.validations.ValidationReport;
 import com.servicelibre.jxsl.dstest.validations.XslOutputValidation;
 import com.servicelibre.jxsl.scenario.XslScenario;
 
@@ -50,10 +51,10 @@ public class XslDataSetRunner
         this.docSource = docSource;
     }
 
-    public int run(DocumentId documentId)
+    public List<ValidationReport> run(DocumentId documentId)
     {
 
-        int processedFilesCount = 0;
+    	List<ValidationReport> validationReports = new ArrayList<ValidationReport>();
 
         if (docSource != null)
         {
@@ -64,7 +65,7 @@ public class XslDataSetRunner
                 for (XslOutputValidation outputValidation : xslOutputValidations)
 
                 {
-                    processedFilesCount += outputValidation.run(docSource.getDocument(documentId));
+                	validationReports.add(outputValidation.run(docSource.getDocument(documentId)));
                 }
             }
             else
@@ -78,13 +79,13 @@ public class XslDataSetRunner
             logger.error("DocumentSource is NULL!");
         }
         
-        return processedFilesCount;
+        return validationReports;
         
     }
 
-    public int runAll()
+    public List<ValidationReport> runAll()
     {
-        int processedFilesCount = 0;
+    	List<ValidationReport> validationReports = new ArrayList<ValidationReport>();
 
         // Get all files Ids to process
         if (docSource != null)
@@ -96,7 +97,7 @@ public class XslDataSetRunner
                 for (DocumentId documentId : docSource.getDocumentIds())
                 {
 
-                    processedFilesCount += run(documentId);
+                	validationReports.addAll(run(documentId));
 
                 }
             }
@@ -111,7 +112,7 @@ public class XslDataSetRunner
             logger.error("DocumentSource is NULL!");
         }
 
-        return processedFilesCount;
+        return validationReports;
     }
 
     public List<XslOutputValidation> getXslOutputValidations()
