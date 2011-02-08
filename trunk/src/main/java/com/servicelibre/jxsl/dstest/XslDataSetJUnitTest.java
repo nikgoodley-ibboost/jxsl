@@ -1,5 +1,8 @@
 package com.servicelibre.jxsl.dstest;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,50 +13,70 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import xsltestengine.engine.XslTestEngineTest;
+import com.servicelibre.jxsl.dstest.validations.ValidationFailure;
+import com.servicelibre.jxsl.dstest.validations.ValidationReport;
 
 @RunWith(Parameterized.class)
-public class XslDataSetJUnitTest
-{
+public class XslDataSetJUnitTest {
     private static final String XSL_DATASET_RUNNER_BEAN_ID = "xslDataSetRunner";
 
     public final static String SPRING_CONTEXT_FILENAME = "xsldataset-context.xml";
 
     private static XslDataSetRunner runner;
 
-    static
-    {
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(SPRING_CONTEXT_FILENAME);
-        runner = (XslDataSetRunner) ctx.getBean(XSL_DATASET_RUNNER_BEAN_ID);
+    static {
+	ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(SPRING_CONTEXT_FILENAME);
+	runner = (XslDataSetRunner) ctx.getBean(XSL_DATASET_RUNNER_BEAN_ID);
     }
 
     protected DocumentId documentId;
 
-    public XslDataSetJUnitTest(DocumentId documentId)
-    {
-        super();
-        this.documentId = documentId;
+    public XslDataSetJUnitTest(DocumentId documentId) {
+	super();
+	this.documentId = documentId;
     }
 
     @Parameters
-    public static Collection<Object[]> getDocuments()
-    {
+    public static Collection<Object[]> getDocuments() {
 
-        List<Object[]> documents = new ArrayList<Object[]>(4);
+	List<Object[]> documents = new ArrayList<Object[]>(4);
 
-        for (DocumentId docId : runner.getDocSource().getDocumentIds())
-        {
-            documents.add(new Object[] { docId });
-        }
+	for (DocumentId docId : runner.getDocSource().getDocumentIds()) {
+	    documents.add(new Object[] { docId });
+	}
 
-        return documents;
+	return documents;
     }
 
     @Test
-    public void dataSetValidationTest()
-    {
+    public void dataSetValidationTest() {
 
-		XslTestEngineTest.assertEngineRun(runner.run(documentId));
+	assertEngineRun(runner.run(documentId));
+
+    }
+    
+    public static void assertEngineRun(List<ValidationReport> validationReports) {
+
+	boolean errors = false;
+
+	assertNotNull(validationReports);
+
+	for (ValidationReport report : validationReports) {
+	    DocumentId documentId = report.getDocumentId();
+	    assertNotNull(documentId);
+	    List<ValidationFailure> failures = report.getFailures();
+	    assertNotNull(failures);
+	    if (failures.size() > 0) {
+		System.out.println("Some output validators failed for " + documentId);
+
+		for (ValidationFailure failure : failures) {
+		    System.out.println(documentId + " => " + failure.getValidatorName() + ": " + failure.getMessage());
+		    errors = true;
+		}
+
+	    }
+	}
+	assertTrue(errors);
 
     }
 

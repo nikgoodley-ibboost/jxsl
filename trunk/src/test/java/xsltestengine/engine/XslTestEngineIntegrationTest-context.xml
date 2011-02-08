@@ -24,40 +24,36 @@
 
 	<!-- Output Validations -->
 	<util:list id="outputValidations" list-class="java.util.ArrayList"
-		value-type="com.servicelibre.jxsl.dstest.validations.XslOutputValidation">
+		value-type="com.servicelibre.jxsl.dstest.validations.XslValidation">
 		<ref bean="outputValidation1" />
 		<ref bean="outputValidation2" />
 	</util:list>
 
-	<!-- JavaXslOutputValidation1 -->
+	<!-- JavaXslValidation1 -->
 	<util:list id="outputValidators1"
 		value-type="com.servicelibre.jxsl.dstest.OuputValidator">
 		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysTrueValidator" />
 		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator" />
 	</util:list>
 	<bean id="outputValidation1"
-		class="com.servicelibre.jxsl.dstest.validations.JavaXslOutputValidation">
+		class="com.servicelibre.jxsl.dstest.validations.JavaXslValidation">
 		<constructor-arg ref="xslScenario" />
 		<constructor-arg ref="outputValidators1" />
 	</bean>
 
-	<!-- JavaXslOutputValidation2 -->
+	<!-- JavaXslValidation2 -->
 	<util:list id="outputValidators2"
 		value-type="com.servicelibre.jxsl.dstest.OuputValidator">
 		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator" />
 		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator" />
 	</util:list>
 	<bean id="outputValidation2"
-		class="com.servicelibre.jxsl.dstest.validations.JavaXslOutputValidation">
+		class="com.servicelibre.jxsl.dstest.validations.JavaXslValidation">
 		<constructor-arg ref="xslScenario" />
 		<constructor-arg ref="outputValidators2" />
 	</bean>
 
-
-
-
 	<!-- Plumbing -->
-
 
 	<bean id="engine" class="com.servicelibre.jxsl.dstest.XslDataSetRunner">
 		<property name="docSource" ref="documentSource" />

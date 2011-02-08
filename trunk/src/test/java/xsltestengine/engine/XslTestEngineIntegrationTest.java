@@ -14,6 +14,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.servicelibre.jxsl.dstest.XslDataSetRunner;
 import com.servicelibre.jxsl.dstest.sources.DocumentSource;
 
+import com.servicelibre.jxsl.dstest.XslDataSetJUnitTest;
+
 /**
  * A system test that verifies the components of the XslTestEngine framework
  * work together successfully. Uses Spring to bootstrap the application for use
@@ -50,7 +52,7 @@ public class XslTestEngineIntegrationTest {
 		assertNotNull(engine);
 
 		
-		XslTestEngineTest.assertEngineRun(engine.runAll());
+		XslDataSetJUnitTest.assertEngineRun(engine.runAll());
 
 	}
 

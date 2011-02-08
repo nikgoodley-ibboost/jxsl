@@ -47,6 +47,10 @@
 	<logger name="com.servicelibre" level="trace" additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
+
+	<logger name="xsltestengine" level="trace" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
 	
 	<logger name="ch.qos.logback" level="debug" additivity="true">
 		<appender-ref ref="STDOUT" />
