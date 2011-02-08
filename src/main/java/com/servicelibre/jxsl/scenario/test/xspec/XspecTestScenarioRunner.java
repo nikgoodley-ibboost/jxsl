@@ -157,7 +157,9 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 	if (generatedTestFile != null && generatedTestFile.exists()) {
 
 	    // TODO if Document parameter != null => filter content  => replace ${jxslTestDocument} by current Document path
-	    
+	    if(xmlDoc != null) {
+		xmlDoc.getFile();
+	    }
 	    
 	    // Execute the xspec test
 	    testRunReport = executeTest(xspecFile, generatedTestFile);
@@ -194,7 +196,7 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
 		try {
 
-		    Document xspecResultDoc = xmlBuilder.parse(testRunReport.mainOutputFile);
+		    org.w3c.dom.Document xspecResultDoc = xmlBuilder.parse(testRunReport.mainOutputFile);
 
 		    testReport.testCount = ((Double) testCount.evaluate(xspecResultDoc, XPathConstants.NUMBER)).intValue();
 		    testReport.testFailedCount = ((Double) testFailedCount.evaluate(xspecResultDoc, XPathConstants.NUMBER)).intValue();
