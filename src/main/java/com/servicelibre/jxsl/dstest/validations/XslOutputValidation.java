@@ -6,5 +6,5 @@ import com.servicelibre.jxsl.dstest.Document;
 public interface XslOutputValidation {
 
 	public boolean isSuccessful();
-	public int run(Document xmlDoc);
+	public ValidationReport run(Document xmlDoc);
 }

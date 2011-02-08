@@ -20,6 +20,8 @@ import com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator;
 import com.servicelibre.jxsl.dstest.validations.AlwaysTrueValidator;
 import com.servicelibre.jxsl.dstest.validations.JavaXslOutputValidation;
 import com.servicelibre.jxsl.dstest.validations.OutputValidator;
+import com.servicelibre.jxsl.dstest.validations.ValidationFailure;
+import com.servicelibre.jxsl.dstest.validations.ValidationReport;
 import com.servicelibre.jxsl.dstest.validations.XslOutputValidation;
 import com.servicelibre.jxsl.scenario.XslScenario;
 
@@ -67,15 +69,39 @@ public class XslTestEngineTest
         XslDataSetRunner engine = new XslDataSetRunner(getDocumentSource(), getXslOutputValidation());
 
         // TODO return a list of runReport or something similar?
-        int run = engine.runAll();
+        assertEngineRun(engine.runAll());
 
-        assertNotNull(run);
-        
-        System.err.println(run);
+     
 
     }
 
-    public DocumentSource getDocumentSource()
+    public static void assertEngineRun(List<ValidationReport> validationReports) {
+
+    	boolean errors = false;
+    	
+    	assertNotNull(validationReports);
+    	
+        for(ValidationReport report : validationReports) {
+        	DocumentId documentId = report.getDocumentId();
+			assertNotNull(documentId);
+        	List<ValidationFailure> failures = report.getFailures();
+        	assertNotNull(failures);
+        	if(failures.size() > 0) {
+        		System.out.println("Some output validators failed for " + documentId);
+
+        		for(ValidationFailure failure : failures) {
+        			System.out.println(documentId + " => " + failure.getValidatorName() + ": " + failure.getMessage());
+        			errors = true;
+        		}
+
+        	}
+        }
+        assertTrue(errors);
+        
+		
+	}
+
+	public DocumentSource getDocumentSource()
     {
         // Create a new DocumentSource
         return new FolderDocumentSource(rootFolder, new String[] { "xml" }, true);
