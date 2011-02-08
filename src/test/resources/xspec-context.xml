@@ -16,12 +16,13 @@
 	<util:list id="xspecFiles" list-class="java.util.ArrayList">
 <!--		<value>xspec/tutorial/escape-for-regex.xspec</value>-->
 <!--		<value>xspec/tutorial/escape-for-regex-success.xspec</value>-->
+		<value>xspec/tutorial/encoding.xspec</value>
 	</util:list>	
 	
 
 	<!-- Xspec directories in which xspec test files will be search recursively -->
 	<util:list id="xspecDirectories" list-class="java.util.ArrayList">
-		<value>xspec/tutorial</value>
+<!--		<value>xspec/tutorial</value>-->
 	</util:list>
 
 	<!-- Main output directory -->
