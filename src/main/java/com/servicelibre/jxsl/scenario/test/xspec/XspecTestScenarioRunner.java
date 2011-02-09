@@ -49,11 +49,13 @@ import com.servicelibre.jxsl.scenario.test.XslTestScenarioRunner;
 
 /**
  * Run XML testdoc => generate Xspec XSL to apply on the fly then apply!
- * 
  */
 public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
     private static final String JXSL_TEST_DOCUMENT_PLACEHOLDER = "file:/jxslTestDocument";
+    private static final String JXSL_TEST_HREF_PLACEHOLDER = "href=\"" + JXSL_TEST_DOCUMENT_PLACEHOLDER + "\"";
+    private static final String JXSL_TEST_SELECT_PLACEHOLDER = "doc\\('" + JXSL_TEST_DOCUMENT_PLACEHOLDER + "'\\)";
+
     static Logger logger = LoggerFactory.getLogger(XspecTestScenarioRunner.class);
 
     static {
@@ -72,6 +74,8 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
     private TestReport lastRunReport;
 
     private DocumentBuilder xmlBuilder;
+    private File currentXspecFile;
+    private XslScenario currentXspecTestsScenario;
 
     public XspecTestScenarioRunner(File xspecTestsGeneratorFile) {
 	super();
@@ -169,14 +173,8 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
 	if (generatedTestFile != null && generatedTestFile.exists()) {
 
-	    // TODO if Document parameter != null => filter content => replace
-	    // file:/jxslTestDocument by current Document path
-	    if (xmlDoc != null) {
-		filterGeneratedTestFile(generatedTestFile, xmlDoc.getFile().getAbsolutePath(), generationReport.outputProperties.getProperty("encoding"));
-	    }
-
 	    // Execute the xspec test
-	    testRunReport = executeTest(xspecFile, generatedTestFile);
+	    testRunReport = executeTest(xspecFile, generatedTestFile, generationReport.outputProperties.getProperty("encoding"), xmlDoc);
 
 	    // Produce HTML report if transformation scenario provided
 	    if (xspecResultHtmlConvertorScenario != null) {
@@ -236,10 +234,17 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
     }
 
-    private void filterGeneratedTestFile(File generatedTestFile, String absolutePath, String encoding) {
+    private void addParamToGeneratedTestFile(File generatedTestFile, String encoding) {
+
+	// Ajouter <xsl:param name="docUrl" required="yes"/>
 	try {
-	    String fileString = FileUtils.readFileToString(generatedTestFile,encoding);
-	    String newContent = fileString.replaceAll(JXSL_TEST_DOCUMENT_PLACEHOLDER, absolutePath);
+	    String fileString = FileUtils.readFileToString(generatedTestFile, encoding);
+
+	    // file:/jxslTestDocument => {$docUrl}
+	    String newContent = fileString.replaceAll(JXSL_TEST_HREF_PLACEHOLDER, "href=\"\\{\\$docUrl\\}\"");
+
+	    newContent = newContent.replaceAll(JXSL_TEST_SELECT_PLACEHOLDER, "doc\\(\\$docUrl\\)");
+	    newContent = newContent.replace("</xsl:stylesheet>", "<xsl:param name=\"docUrl\" required=\"yes\"/></xsl:stylesheet>");
 
 	    String generatedTestFilePath = generatedTestFile.getAbsolutePath();
 	    File newFile = new File(generatedTestFilePath + ".new");
@@ -280,28 +285,41 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
      * 
      * @param xspecFile
      * @param generatedTestFile
+     * @param generatedTestFileEncoding
+     * @param xmlDoc
      * @return
      */
-    private RunReport executeTest(File xspecFile, File generatedTestFile) {
+    private RunReport executeTest(File xspecFile, File generatedTestFile, String generatedTestFileEncoding, Document xmlDoc) {
 
-	// Execute test XSL on xspecFile and get XML results
-	XslScenario xspecTests = new XslScenario(generatedTestFile);
+	if (currentXspecFile == null || !currentXspecFile.getAbsolutePath().equals(xspecFile.getAbsolutePath())) {
 
-	xspecTests.getTransformer().reset();
-	xspecTests.setSaveOutputOnDisk(true);
-	xspecTests.setMainOutputDir(generatedTestFile.getParentFile());
-	xspecTests.setStoreResultsInSubDir(false);
-	xspecTests.setSaveRunReport(true);
-	xspecTests.setSaveXmlSource(true);
-	xspecTests.setMainOutputName(xspecFile.getName().replace(".xspec", "-result.xml"));
-	xspecTests.setInitialTemplate("{http://www.jenitennison.com/xslt/xspec}main");
-	xspecTests.setName(xspecFile.getName().replaceAll(".xspec", "_xspec"));
+	    if (xmlDoc != null) {
+		addParamToGeneratedTestFile(generatedTestFile, generatedTestFileEncoding);
+	    }
+
+	    currentXspecTestsScenario = new XslScenario(generatedTestFile);
+	    currentXspecFile = xspecFile;
+	}
+
+	if (xmlDoc != null) {
+	    currentXspecTestsScenario.setParameter("docUrl", xmlDoc.getFile().getAbsolutePath());
+	}
+
+	currentXspecTestsScenario.getTransformer().reset();
+	currentXspecTestsScenario.setSaveOutputOnDisk(true);
+	currentXspecTestsScenario.setMainOutputDir(generatedTestFile.getParentFile());
+	currentXspecTestsScenario.setStoreResultsInSubDir(false);
+	currentXspecTestsScenario.setSaveRunReport(true);
+	currentXspecTestsScenario.setSaveXmlSource(true);
+	currentXspecTestsScenario.setMainOutputName(xspecFile.getName().replace(".xspec", "-result.xml"));
+	currentXspecTestsScenario.setInitialTemplate("{http://www.jenitennison.com/xslt/xspec}main");
+	currentXspecTestsScenario.setName(xspecFile.getName().replaceAll(".xspec", "_xspec"));
 
 	// FIXME xspecFile could be omitted since initialTemplate has been
 	// set? Create an apply() method without arg?
-	xspecTests.apply(xspecFile);
+	currentXspecTestsScenario.apply(xspecFile);
 
-	return xspecTests.getLastRunReport();
+	return currentXspecTestsScenario.getLastRunReport();
     }
 
     /**
