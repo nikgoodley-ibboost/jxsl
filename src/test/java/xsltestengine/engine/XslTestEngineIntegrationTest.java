@@ -47,7 +47,6 @@ public class XslTestEngineIntegrationTest {
 
 		assertNotNull(documentSource);
 		assertTrue(documentSource.getDocumentIds().size() > 0);
-		System.err.println(documentSource.getDocumentIds());
 
 		assertNotNull(engine);
 

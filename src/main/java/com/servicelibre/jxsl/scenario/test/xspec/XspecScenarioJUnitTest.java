@@ -116,11 +116,7 @@ public class XspecScenarioJUnitTest
         {
             System.err.println(testReport);
         }
-        else
-        {
-            System.out.println(testReport);
-        }
-
+       
         StringBuilder sb = new StringBuilder();
         sb.append(testReport.testFailedCount).append(" test(s) on ").append(testReport.testCount).append(" failed. ");
                 
