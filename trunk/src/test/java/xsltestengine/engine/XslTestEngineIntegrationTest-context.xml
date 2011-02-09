@@ -27,11 +27,17 @@
 		value-type="com.servicelibre.jxsl.dstest.validations.XslValidation">
 		<ref bean="outputValidation1" />
 		<ref bean="outputValidation2" />
+		<ref bean="xspecValidation" />
 	</util:list>
 
+
+	<bean id="xspecValidation" class="xsltestengine.engine.XspecValidation">
+		<constructor-arg ref="xspecRunner"/>
+		<constructor-arg ref="xspecFile"/>
+	</bean>
+	
 	<!-- JavaXslValidation1 -->
-	<util:list id="outputValidators1"
-		value-type="com.servicelibre.jxsl.dstest.OuputValidator">
+	<util:list id="outputValidators1" value-type="com.servicelibre.jxsl.dstest.OuputValidator">
 		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysTrueValidator" />
 		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator" />
 	</util:list>
@@ -42,8 +48,7 @@
 	</bean>
 
 	<!-- JavaXslValidation2 -->
-	<util:list id="outputValidators2"
-		value-type="com.servicelibre.jxsl.dstest.OuputValidator">
+	<util:list id="outputValidators2" value-type="com.servicelibre.jxsl.dstest.OuputValidator">
 		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator" />
 		<bean class="com.servicelibre.jxsl.dstest.validations.AlwaysFalseValidator" />
 	</util:list>
@@ -53,7 +58,32 @@
 		<constructor-arg ref="outputValidators2" />
 	</bean>
 
+
+	<bean id="xspecMainXslResource" class="org.springframework.core.io.ClassPathResource">
+		<constructor-arg value="xspec/generate-xspec-tests.xsl" />
+	</bean>
+	
+	<bean id="xspecResource" class="org.springframework.core.io.ClassPathResource">
+		<constructor-arg value="xspec/tutorial/testHref.xspec" />
+	</bean>
+	
 	<!-- Plumbing -->
+	<bean id="xspecRunner"
+		class="com.servicelibre.jxsl.scenario.test.xspec.XspecTestScenarioRunner">
+		<constructor-arg ref="xspecMainXsl"/>
+	</bean>
+	
+	<bean id="xspecMainXsl"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="xspecMainXslResource" />
+		<property name="targetMethod" value="getFile" />
+	</bean>
+	
+	<bean id="xspecFile"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="xspecResource" />
+		<property name="targetMethod" value="getFile" />
+	</bean>
 
 	<bean id="engine" class="com.servicelibre.jxsl.dstest.XslDataSetRunner">
 		<property name="docSource" ref="documentSource" />

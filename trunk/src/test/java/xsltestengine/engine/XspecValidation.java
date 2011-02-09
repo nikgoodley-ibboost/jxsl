@@ -35,11 +35,9 @@ public class XspecValidation implements XslValidation {
 
 	logger.debug("Going to run Xspec test on {} [{}]", xmlDoc.id, xspecFile);
 
-	// TODO setParameter toxmlDoc.getFile().getUri()
-
 	TestReport testReport = xspecRunner.run(xspecFile, xmlDoc);
 
-	System.err.println(testReport.success);
+	logger.debug("Validation result: {}",testReport.success?"SUCCESS":"FAILURE");
 
 	return validationReport;
     }
