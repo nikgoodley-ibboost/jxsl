@@ -312,6 +312,8 @@
 				<directory>${basedir}/src/test/java</directory>
 				<includes>
 					<include>**/*.xml</include>
+					<include>**/*.xsl</include>
+					<include>**/*.ad</include>
 				</includes>
 				<filtering>true</filtering>
 			</resource>
@@ -557,6 +559,7 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
+	
 	<repositories>
 		<repository>
 			<id>maven-central</id>
