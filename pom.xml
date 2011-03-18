@@ -3,24 +3,26 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>com.servicelibre</groupId>
+		<artifactId>servicelibre-parent</artifactId>
+		<version>5-SNAPSHOT</version>
+	</parent>
+
 	<!-- POM base information -->
 
 	<groupId>com.servicelibre</groupId>
 	<artifactId>jxsl</artifactId>
-	<version>0.1.8-SNAPSHOT</version>
+	<version>0.1.9-SNAPSHOT</version>
 
 	<name>jxsl</name>
 	<description>Java XSL code library</description>
 	<url>http://code.google.com/p/jxsl</url>
 	<inceptionYear>2010</inceptionYear>
 
-
 	<!-- Properties -->
 	<properties>
 		<jdk.version>1.6</jdk.version>
-		<logback.version>0.9.26</logback.version>
-		<saxon.version>9.3.0.2j</saxon.version>
-		<spring.version>3.0.5.RELEASE</spring.version>
 	</properties>
 
 	<!-- Source code versionning system -->
@@ -90,7 +92,7 @@
 			<id>jxsl-snapshots</id>
 			<name>Alternate Maven repository of snapshots</name>
 			<url>dav:https://jxsl.googlecode.com/svn/maven2/snapshots</url>
-			<uniqueVersion>false</uniqueVersion>
+			<uniqueVersion>true</uniqueVersion>
 		</snapshotRepository>
 		<site>
 			<id>jxsl-website</id>
@@ -206,7 +208,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.4.3</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
 				</configuration>
@@ -215,24 +216,16 @@
  	    	<plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-surefire-plugin</artifactId>
-		        <version>2.5</version>
 	       </plugin>			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-scm-plugin</artifactId>
-				<version>1.4</version>
-				<configuration>
-					<connectionType>developerConnection</connectionType>
-					<!-- <username>servicel</username> -->
-					<privatekey>/home/benoitm/.ssh/toSLSVN</privatekey>
-				</configuration>
 			</plugin>
 
 			<!-- License management -->
 			<plugin>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
-				<version>1.8.0</version>
 				<configuration>
 					<header>src/main/resources/license-header.txt</header>
 					<strictCheck>true</strictCheck>
@@ -292,7 +285,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.6</version>
 			</plugin>
 		</plugins>
 
@@ -312,6 +304,7 @@
 				<directory>${basedir}/src/test/java</directory>
 				<includes>
 					<include>**/*.xml</include>
+					<include>**/*.xsl</include>
 				</includes>
 				<filtering>true</filtering>
 			</resource>
@@ -324,7 +317,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.2</version>
 				<configuration>
 					<linkJavadoc>true</linkJavadoc>
 				</configuration>
@@ -332,7 +324,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.7</version>
 				<configuration>
 					<quiet>true</quiet>
 				</configuration>
@@ -352,12 +343,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-changelog-plugin</artifactId>
-				<version>2.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>2.5</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
 					<linkXref>true</linkXref>
@@ -378,7 +367,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jdepend-maven-plugin</artifactId>
-				<version>2.0-beta-2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
 				</configuration>
@@ -386,12 +374,10 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>javancss-maven-plugin</artifactId>
-				<version>2.0-beta-2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>taglist-maven-plugin</artifactId>
-				<version>2.4</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
 					<tags>
@@ -406,7 +392,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-changelog-plugin</artifactId>
-				<version>2.2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
 				</configuration>
@@ -422,50 +407,41 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
 				</exclusion>
 			</exclusions>
-			<type>pom</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
-			<version>${logback.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>${logback.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.1</version>
 		</dependency>
 
 		<!-- 
@@ -518,7 +494,6 @@
 		<dependency>
 			<groupId>net.sf.saxon</groupId>
 			<artifactId>saxon</artifactId>
-			<version>${saxon.version}</version>
 		</dependency>
 
 		<dependency>
@@ -538,29 +513,21 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.7</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>xalan</groupId>
 			<artifactId>xalan</artifactId>
-			<version>2.7.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.0</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>maven-central</id>
-			<url>http://repo1.maven.org/maven2/</url>
-		</repository>
-	</repositories>
+	
 </project>
