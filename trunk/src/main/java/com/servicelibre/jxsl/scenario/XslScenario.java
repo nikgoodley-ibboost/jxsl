@@ -250,7 +250,7 @@ public class XslScenario {
 			}
 
 			InputSource inputSource = new InputSource(new ByteArrayInputStream(xmlBytes));
-
+			
 			// To prevent error such FORG0002 (Base URI {} is not an absolute
 			// URI), etc.
 			inputSource.setSystemId(systemId);
@@ -724,11 +724,14 @@ public class XslScenario {
 		// TODO if Saxon, add info from productTitle. Otherwise check jar
 		// manifest for Implementation-Version, Implementation-Vendor at least.
 		/*
-		 * Name: org/apache/xalan/ Comment: Main Xalan engine implementing
+		 * Name: org/apache/xalan/ 
+		 * Comment: Main Xalan engine implementing
 		 * TrAX/JAXP Specification-Title: Java API for XML Processing
-		 * Specification-Vendor: Sun Microsystems Inc. Specification-Version:
-		 * 1.3 Implementation-Title: org.apache.xalan Implementation-Version:
-		 * 2.7.1 Implementation-Vendor: Apache Software Foundation
+		 * Specification-Vendor: Sun Microsystems Inc. 
+		 * Specification-Version: 1.3 
+		 * Implementation-Title: org.apache.xalan 
+		 * Implementation-Version: 2.7.1 
+		 * Implementation-Vendor: Apache Software Foundation
 		 * Implementation-URL: http://xml.apache.org/xalan-j/
 		 */
 

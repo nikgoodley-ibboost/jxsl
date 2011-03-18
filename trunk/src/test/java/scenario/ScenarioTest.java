@@ -79,7 +79,7 @@ public class ScenarioTest
         sc.setXslPath(xslPath);
         Map<String, String> outputs = sc.apply(xmlFile);
 
-        assertNotNull("outputs object cannot be null.");
+        assertNotNull("outputs object cannot be null.", outputs);
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>falseBenoit Mercier,Géraldine Westerkamp,",
                 outputs.get(XslScenario.MAIN_OUTPUT_KEY));
 
