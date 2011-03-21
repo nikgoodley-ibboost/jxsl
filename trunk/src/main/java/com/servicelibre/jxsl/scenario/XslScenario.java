@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.text.MessageFormat;
@@ -97,6 +99,9 @@ public class XslScenario {
 
 	private String description;
 
+	/**
+	 * XSL URI as string
+	 */
 	private String xslPath;
 
 	private Map<String, Object> parameters = new HashMap<String, Object>();
@@ -141,6 +146,10 @@ public class XslScenario {
 		init();
 	}
 
+	/**
+	 * 
+	 * @param xslPath valid xsl URI as String
+	 */
 	public XslScenario(String xslPath) {
 		super();
 		setXslPath(xslPath);
@@ -152,7 +161,7 @@ public class XslScenario {
 	}
 
 	public XslScenario(File xslFile) {
-		this(xslFile.getAbsolutePath());
+		this(xslFile.toURI().toASCIIString());
 	}
 
 	/* Business methods */
@@ -533,10 +542,16 @@ public class XslScenario {
 	}
 
 	public void setXslPath(String xslPath) {
+		try {
+		    // Conversion to URI is done for validation purposes in order to detect problems (bad URI, encoding of special chars, etc.)
+		    // before the XML parser is called
+		    this.xslPath = new URI(xslPath).toASCIIString();
+		} catch (URISyntaxException e) {
+		    logger.error(xslPath + " (xslPath) is not a valid URI.", e);
+		    return;
+		}
 
-		this.xslPath = xslPath;
-
-		setMainOutputName(FilenameUtils.getBaseName(xslPath) + OUTPUT_FILE_EXT);
+		setMainOutputName(FilenameUtils.getBaseName(this.xslPath) + OUTPUT_FILE_EXT);
 
 		// To force new transformer creation
 		this.transformer = null;

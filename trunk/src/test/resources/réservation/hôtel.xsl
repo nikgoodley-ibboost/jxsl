@@ -23,7 +23,7 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     version="2.0">
-        <xsl:template match="document">
-            <xsl:value-of select="name"/> : <xsl:value-of select="characters"/>
+        <xsl:template match="hôtel">
+            <xsl:value-of select="nom"/>
         </xsl:template>
 </xsl:stylesheet>
