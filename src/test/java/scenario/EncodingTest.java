@@ -20,6 +20,7 @@
 
 package scenario;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -27,6 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Formatter;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -42,6 +45,7 @@ import com.servicelibre.jxsl.scenario.XslScenario;
 @ContextConfiguration(locations = "classpath:ScenarioTest-context.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class EncodingTest {
+
     @javax.annotation.Resource
     private Map<String, Resource> testResources;
 
@@ -57,6 +61,7 @@ public class EncodingTest {
 
 	Map<String, String> outputs = sc.apply(xmlFile);
 	assertNotNull("outputs object cannot be null.", outputs);
+	assertTrue("Output cannot be empty.", outputs.get(XslScenario.MAIN_OUTPUT_KEY).length() > 0);
 
     }
 
@@ -76,10 +81,18 @@ public class EncodingTest {
 	}
 
 	System.out.println();
-	// BOM UTF-16LE
 
-	assertEquals(0xff, 255);
-	assertEquals(0xfe, bytes[1]);
+	// BOM UTF-16LE
+	StringBuilder sb = new StringBuilder();
+	Formatter formatter = new Formatter(sb);
+
+	formatter.format("%02x", bytes[0]);
+	assertEquals("ff", sb.toString());
+
+	sb.delete(0, 2);
+
+	formatter.format("%02x", bytes[1]);
+	assertEquals("fe", sb.toString());
 
 	Map<String, String> outputs = sc.apply(bytes);
 	assertNotNull("outputs object cannot be null.", outputs);
@@ -103,6 +116,29 @@ public class EncodingTest {
 	// 2e exécution
 	outputs = sc.apply(bytes);
 	assertNotNull("outputs object cannot be null.", outputs);
+
+    }
+
+    @Test
+    public void filenameWithSpecialChar() throws IOException {
+
+	File xmlFile = new File(testResources.get("hôtel.xml").getURI());
+	File xslFile = new File(testResources.get("hôtel.xsl").getURI());
+
+	assertNotNull(xmlFile);
+	assertTrue(xmlFile.exists());
+
+	System.err.println(xslFile.getAbsolutePath());
+	System.err.println(xslFile.getAbsoluteFile());
+	System.err.println(xslFile.getCanonicalFile());
+	System.err.println(xslFile.getCanonicalPath());
+	
+	XslScenario sc = new XslScenario("file://" + xslFile.getCanonicalPath());
+	Map<String, String> outputs = sc.apply(xmlFile);
+	assertNotNull("outputs object cannot be null.", outputs);
+	assertTrue("Output cannot be empty.", outputs.get(XslScenario.MAIN_OUTPUT_KEY).length() > 0);
+	System.err.println(outputs.get(XslScenario.MAIN_OUTPUT_KEY));
+
 
     }
 
@@ -135,45 +171,47 @@ public class EncodingTest {
 	    System.out.format("%02x ", b);
 	}
 	System.out.println("\n\n");
-	
+
 	System.out.println("byte[] bytesUTF8 = {0x65, (byte) 0xc3, (byte) 0xa9}; => eé\n\n");
-	byte[] bytesUTF8 = {0x65, (byte) 0xc3, (byte) 0xa9};
+	byte[] bytesUTF8 = { 0x65, (byte) 0xc3, (byte) 0xa9 };
 	try {
 	    String stringUTF8 = new String(bytesUTF8, "UTF-8");
 	    System.out.println("write UTF8 bytes to string - read UTF8 bytes from string: " + stringUTF8);
 	    printBytes(stringUTF8.getBytes("UTF-8"));
 	    System.out.println("write UTF8 bytes to string - read UTF16 bytes from string: " + stringUTF8);
 	    printBytes(stringUTF8.getBytes("UTF-16"));
-		    
-	    
+
 	    String wrongStringUTF16 = new String(bytesUTF8, "UTF-16");
-	    // FF FD: REPLACEMENT CHARACTER: used to replace an incoming character whose value is unknown or unrepresentable in Unicode.
+
+	    // FF FD: REPLACEMENT CHARACTER: used to replace an incoming
+	    // character whose value is unknown or unrepresentable in Unicode.
 	    System.out.println("write wrong UTF-16 bytes to string - read UTF-16 bytes from string: " + wrongStringUTF16);
 	    printBytes(wrongStringUTF16.getBytes("UTF-16"));
-	    
-	    // EF BF BD = UTF-8 encoding of code point U+FFFD (REPLACEMENT CHARACTER)
+
+	    // EF BF BD = UTF-8 encoding of code point U+FFFD (REPLACEMENT
+	    // CHARACTER)
 	    System.out.println("write wrong UTF-16 bytes to string - read UTF-8 bytes from string: " + wrongStringUTF16);
 	    printBytes(wrongStringUTF16.getBytes("UTF-8"));
-	    
+
 	} catch (UnsupportedEncodingException e) {
 	    e.printStackTrace();
 	}
-	
+
 	System.out.println("\n\nbyte[] bytesUTF16 = {0x00, 0x65, 0x00,(byte) 0xe9}; => eé\n\n");
-	byte[] bytesUTF16 = {0x00, 0x65, 0x00,(byte) 0xe9};
+	byte[] bytesUTF16 = { 0x00, 0x65, 0x00, (byte) 0xe9 };
 	try {
 	    String stringUTF16 = new String(bytesUTF16, "UTF-16");
 	    System.out.println("write UTF-16 bytes to string - read UTF16 bytes from string: [" + stringUTF16 + "] length=" + stringUTF16.length());
 	    printBytes(stringUTF16.getBytes("UTF-16"));
 	    System.out.println("write UTF-16 bytes to string - read UTF-8 bytes from string: [" + stringUTF16 + "] length=" + stringUTF16.length());
 	    printBytes(stringUTF16.getBytes("UTF-8"));
-	    
+
 	    String wrongStringUTF8 = new String(bytesUTF16, "UTF-8");
 	    System.out.println("write wrong UTF-8 bytes to string - read UTF-16 bytes from string: [CTRL CHAR] length=" + wrongStringUTF8.length());
 	    printBytes(wrongStringUTF8.getBytes("UTF-16"));
 	    System.out.println("write wrong UTF-8 bytes to string - read UTF-8 bytes from string: [CTRL CHAR] length=" + wrongStringUTF8.length());
 	    printBytes(wrongStringUTF8.getBytes("UTF-8"));
-	    
+
 	} catch (UnsupportedEncodingException e) {
 	    e.printStackTrace();
 	}

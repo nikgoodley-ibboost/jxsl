@@ -12,6 +12,8 @@
 		<entry key="test01.xml" value="classpath:test01.xml" />
 		<entry key="utf16-doc.xml" value="classpath:utf16-doc.xml"/>
 		<entry key="encoding.xsl" value="classpath:encoding.xsl"/>
+		<entry key="hôtel.xml" value="classpath:réservation/hôtel.xml"/>
+		<entry key="hôtel.xsl" value="classpath:réservation/hôtel.xsl"/>
 	</util:map>
 
 
