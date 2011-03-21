@@ -20,16 +20,15 @@
 
 package scenario;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Formatter;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -128,17 +127,11 @@ public class EncodingTest {
 	assertNotNull(xmlFile);
 	assertTrue(xmlFile.exists());
 
-	System.err.println(xslFile.getAbsolutePath());
-	System.err.println(xslFile.getAbsoluteFile());
-	System.err.println(xslFile.getCanonicalFile());
-	System.err.println(xslFile.getCanonicalPath());
-	
-	XslScenario sc = new XslScenario("file://" + xslFile.getCanonicalPath());
+	XslScenario sc = new XslScenario(xslFile.getCanonicalPath());
 	Map<String, String> outputs = sc.apply(xmlFile);
 	assertNotNull("outputs object cannot be null.", outputs);
 	assertTrue("Output cannot be empty.", outputs.get(XslScenario.MAIN_OUTPUT_KEY).length() > 0);
 	System.err.println(outputs.get(XslScenario.MAIN_OUTPUT_KEY));
-
 
     }
 
