@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" stylesheet="toHtmlWithIds.xsl">
+
+    <x:scenario label="When processing a list books">
+        <!-- apply template rules to this element -->
+        <!--<x:context href="/home/benoitm/src/servicelibre.com/jxsl/src/test/resources/xsltestengine-data/books-a.xml"/>-->
+        <x:context href="/jxslTestDocument"/>
+        <!-- check the result -->
+        <x:expect label="There must be 12 button to books" test="count(//button) = 12"/>
+    </x:scenario>
+
+</x:description>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <parent>
+        <name>Mercier</name>
+        <surname>Benoit</surname>
+        <gender>male</gender>
+    </parent>
+
+    <parent>
+        <name>Westerkamp</name>
+        <surname>Géraldine</surname>
+        <gender>female</gender>
+    </parent>   
+
+</root>
