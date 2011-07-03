@@ -6,14 +6,14 @@
 	<parent>
 		<groupId>com.servicelibre</groupId>
 		<artifactId>servicelibre-parent</artifactId>
-		<version>5-SNAPSHOT</version>
+		<version>5</version>
 	</parent>
 
 	<!-- POM base information -->
 
 	<groupId>com.servicelibre</groupId>
 	<artifactId>jxsl</artifactId>
-	<version>0.1.9-SNAPSHOT</version>
+	<version>0.1.9</version>
 
 	<name>jxsl</name>
 	<description>Java XSL code library</description>
@@ -28,9 +28,9 @@
 	<!-- Source code versionning system -->
 
 	<scm>
-		<connection>scm:svn:http://jxsl.googlecode.com/svn/tags/jxsl-0.1.0</connection>
-		<developerConnection>scm:svn:https://jxsl.googlecode.com/svn/tags/jxsl-0.1.0</developerConnection>
-		<url>http://code.google.com/p/jxsl/source/browse/tags/jxsl-0.1.0</url>
+		<connection>scm:svn:http://jxsl.googlecode.com/svn/tags/jxsl-0.1.9</connection>
+		<developerConnection>scm:svn:https://jxsl.googlecode.com/svn/tags/jxsl-0.1.9</developerConnection>
+		<url>http://code.google.com/p/jxsl/source/browse/tags/jxsl-0.1.9</url>
 	</scm>
 
 	<!-- Project details -->
