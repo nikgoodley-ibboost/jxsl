@@ -44,151 +44,151 @@ import com.servicelibre.jxsl.scenario.test.XslTestSuiteRunner;
 public class XspecTestSuiteRunner implements XslTestSuiteRunner
 
 {
-    private static final String DEFAULT_RESULTS_DIR_NAME = "XspecTestSuiteRunner";
+	private static final String DEFAULT_RESULTS_DIR_NAME = "XspecTestSuiteRunner";
 
-    private static final Logger logger = LoggerFactory.getLogger(XspecTestSuiteRunner.class);
+	private static final Logger logger = LoggerFactory.getLogger(XspecTestSuiteRunner.class);
 
-    private List<File> testFiles = new ArrayList<File>();
-    private List<File> testDirectoryFiles = new ArrayList<File>();
+	private List<File> testFiles = new ArrayList<File>();
+	private List<File> testDirectoryFiles = new ArrayList<File>();
 
-    private IOFileFilter fileFilter = TrueFileFilter.TRUE;
-    private IOFileFilter directoryFilter = TrueFileFilter.TRUE;
+	private IOFileFilter fileFilter = TrueFileFilter.TRUE;
+	private IOFileFilter directoryFilter = TrueFileFilter.TRUE;
 
-    private boolean storeResultsInSubDir = true;
-    private boolean resultsSubDirWithTimeStamp = false;
+	private boolean storeResultsInSubDir = true;
+	private boolean resultsSubDirWithTimeStamp = false;
 
-    XspecTestScenarioRunner xspecRunner;
+	XspecTestScenarioRunner xspecRunner;
 
-    private String resultsDirName = DEFAULT_RESULTS_DIR_NAME;
-    private File outputDir = new File(System.getProperty("java.io.tmpdir"));
-    private String timeStamp;
-    private SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd-HHmmss-S");
+	private String resultsDirName = DEFAULT_RESULTS_DIR_NAME;
+	private File outputDir = new File(System.getProperty("java.io.tmpdir"));
+	private String timeStamp;
+	private SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd-HHmmss-S");
 
-    public XspecTestSuiteRunner(File xspecTestsGeneratorFile) {
-	this(new XspecTestScenarioRunner(xspecTestsGeneratorFile));
-    }
-
-    public XspecTestSuiteRunner(XspecTestScenarioRunner xspecTestRunner) {
-	this.xspecRunner = xspecTestRunner;
-	init();
-    }
-
-    public void init() {
-
-	this.timeStamp = df.format(new Date());
-
-	setFileFilter(FileFilterUtils.suffixFileFilter("xspec"));
-
-    }
-
-    public TestReport run(File xspecTestFile) {
-	return xspecRunner.run(xspecTestFile, getOutputDir());
-    }
-
-    private File getOutputDir() {
-	
-	if (storeResultsInSubDir) {
-	    // All xspec results will be under a common timestamped directory
-	    if (resultsSubDirWithTimeStamp) {
-		return new File(outputDir, this.timeStamp + "-" + resultsDirName);
-	    } else {
-		return new File(outputDir, resultsDirName);
-	    }
-	} else {
-	    // Xspec results will be stored directly under outputdir
-	    return outputDir;
-	}
-    }
-
-    public List<TestReport> runAll() {
-	
-	List<TestReport> testReports = new ArrayList<TestReport>();
-
-	logger.info("Starting the execution of Xspec tests...");
-	
-	for (File xspecFile : getTestFiles()) {
-	    testReports.add(run(xspecFile));
+	public XspecTestSuiteRunner(File xspecTestsGeneratorFile) {
+		this(new XspecTestScenarioRunner(xspecTestsGeneratorFile));
 	}
 
-	return testReports;
-    }
-
-    public void setFiles(List<File> files) {
-	testFiles.clear();
-	testFiles.addAll(files);
-    }
-
-    /**
-     * Recursively load all *.xspec files under each given directories.
-     * 
-     * @param directories
-     */
-    public void setDirectories(List<File> directories) {
-	testDirectoryFiles.clear();
-
-	for (File dir : directories) {
-	    testDirectoryFiles.addAll(FileUtils.listFiles(dir, fileFilter, directoryFilter));
+	public XspecTestSuiteRunner(XspecTestScenarioRunner xspecTestRunner) {
+		this.xspecRunner = xspecTestRunner;
+		init();
 	}
-    }
 
-    public List<File> getTestFiles() {
+	public void init() {
 
-	List<File> allFiles = new ArrayList<File>(testFiles.size() + testDirectoryFiles.size());
-	allFiles.addAll(testFiles);
-	allFiles.addAll(testDirectoryFiles);
-	return allFiles;
-    }
+		this.timeStamp = df.format(new Date());
 
-    public IOFileFilter getFileFilter() {
-	return fileFilter;
-    }
+		setFileFilter(FileFilterUtils.suffixFileFilter("xspec"));
 
-    public void setFileFilter(IOFileFilter fileFilter) {
-	this.fileFilter = fileFilter;
-    }
+	}
 
-    public IOFileFilter getDirectoryFilter() {
-	return directoryFilter;
-    }
+	public TestReport run(File xspecTestFile) {
+		return xspecRunner.run(xspecTestFile, getOutputDir());
+	}
 
-    public void setDirectoryFilter(IOFileFilter directoryFilter) {
-	this.directoryFilter = directoryFilter;
-    }
+	private File getOutputDir() {
 
-    public String getTimeStamp() {
-	return timeStamp;
-    }
+		if (storeResultsInSubDir) {
+			// All xspec results will be under a common timestamped directory
+			if (resultsSubDirWithTimeStamp) {
+				return new File(outputDir, this.timeStamp + "-" + resultsDirName);
+			} else {
+				return new File(outputDir, resultsDirName);
+			}
+		} else {
+			// Xspec results will be stored directly under outputdir
+			return outputDir;
+		}
+	}
 
-    public void setTimeStamp(String timeStamp) {
-	this.timeStamp = timeStamp;
-    }
+	public List<TestReport> runAll() {
 
-    public void setOutputDir(File outputDir) {
-	this.outputDir = outputDir;
-    }
+		List<TestReport> testReports = new ArrayList<TestReport>();
 
-    public String getDefaultResultsDirName() {
-	return resultsDirName;
-    }
+		logger.info("Starting the execution of Xspec tests...");
 
-    public void setDefaultResultsDirName(String resultsDirName) {
-	this.resultsDirName = resultsDirName;
-    }
+		for (File xspecFile : getTestFiles()) {
+			testReports.add(run(xspecFile));
+		}
 
-    public boolean isResultsSubDirWithTimeStamp() {
-	return resultsSubDirWithTimeStamp;
-    }
+		return testReports;
+	}
 
-    public void setResultsSubDirWithTimeStamp(boolean resultsSubDirWithTimeStamp) {
-	this.resultsSubDirWithTimeStamp = resultsSubDirWithTimeStamp;
-    }
+	public void setFiles(List<File> files) {
+		testFiles.clear();
+		testFiles.addAll(files);
+	}
 
-    public boolean isStoreResultsInSubDir() {
-	return storeResultsInSubDir;
-    }
+	/**
+	 * Recursively load all *.xspec files under each given directories.
+	 * 
+	 * @param directories
+	 */
+	public void setDirectories(List<File> directories) {
+		testDirectoryFiles.clear();
 
-    public void setStoreResultsInSubDir(boolean storeResultsInSubDir) {
-	this.storeResultsInSubDir = storeResultsInSubDir;
-    }
+		for (File dir : directories) {
+			testDirectoryFiles.addAll(FileUtils.listFiles(dir, fileFilter, directoryFilter));
+		}
+	}
+
+	public List<File> getTestFiles() {
+
+		List<File> allFiles = new ArrayList<File>(testFiles.size() + testDirectoryFiles.size());
+		allFiles.addAll(testFiles);
+		allFiles.addAll(testDirectoryFiles);
+		return allFiles;
+	}
+
+	public IOFileFilter getFileFilter() {
+		return fileFilter;
+	}
+
+	public void setFileFilter(IOFileFilter fileFilter) {
+		this.fileFilter = fileFilter;
+	}
+
+	public IOFileFilter getDirectoryFilter() {
+		return directoryFilter;
+	}
+
+	public void setDirectoryFilter(IOFileFilter directoryFilter) {
+		this.directoryFilter = directoryFilter;
+	}
+
+	public String getTimeStamp() {
+		return timeStamp;
+	}
+
+	public void setTimeStamp(String timeStamp) {
+		this.timeStamp = timeStamp;
+	}
+
+	public void setOutputDir(File outputDir) {
+		this.outputDir = outputDir;
+	}
+
+	public String getDefaultResultsDirName() {
+		return resultsDirName;
+	}
+
+	public void setDefaultResultsDirName(String resultsDirName) {
+		this.resultsDirName = resultsDirName;
+	}
+
+	public boolean isResultsSubDirWithTimeStamp() {
+		return resultsSubDirWithTimeStamp;
+	}
+
+	public void setResultsSubDirWithTimeStamp(boolean resultsSubDirWithTimeStamp) {
+		this.resultsSubDirWithTimeStamp = resultsSubDirWithTimeStamp;
+	}
+
+	public boolean isStoreResultsInSubDir() {
+		return storeResultsInSubDir;
+	}
+
+	public void setStoreResultsInSubDir(boolean storeResultsInSubDir) {
+		this.storeResultsInSubDir = storeResultsInSubDir;
+	}
 
 }

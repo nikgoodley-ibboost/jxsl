@@ -34,7 +34,7 @@
 	<!--
 	Should you need to use another version of the XSpec XSL residing outside of this project,
 	simply comment the 2 following beans (xspecMainXslResource and xspecMainXsl) and uncomment the following
-	one to directly reference the file you want to uise  
+	one to directly reference the file you want to use  
 	 -->
 	<!--
 	<bean id="xspecMainXsl" class="java.io.File">

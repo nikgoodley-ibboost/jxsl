@@ -52,361 +52,361 @@ import com.servicelibre.jxsl.scenario.test.XslTestScenarioRunner;
  */
 public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
-    private static final String JXSL_TEST_DOCUMENT_PLACEHOLDER = "file:/jxslTestDocument";
-    private static final String JXSL_TEST_HREF_PLACEHOLDER = "href=\"" + JXSL_TEST_DOCUMENT_PLACEHOLDER + "\"";
-    private static final String JXSL_TEST_SELECT_PLACEHOLDER = "doc\\('" + JXSL_TEST_DOCUMENT_PLACEHOLDER + "'\\)";
+	private static final String JXSL_TEST_DOCUMENT_PLACEHOLDER = "file:/jxslTestDocument";
+	private static final String JXSL_TEST_HREF_PLACEHOLDER = "href=\"" + JXSL_TEST_DOCUMENT_PLACEHOLDER + "\"";
+	private static final String JXSL_TEST_SELECT_PLACEHOLDER = "doc\\('" + JXSL_TEST_DOCUMENT_PLACEHOLDER + "'\\)";
 
-    static Logger logger = LoggerFactory.getLogger(XspecTestScenarioRunner.class);
+	static Logger logger = LoggerFactory.getLogger(XspecTestScenarioRunner.class);
 
-    static {
-	System.setProperty("javax.xml.transform.TransformerFactory", XslScenario.SAXON_TRANSFORMER_FACTORY_FQCN);
-    }
-
-    private File outputDir = new File(System.getProperty("java.io.tmpdir"));
-    private XslScenario xspecTestsGeneratorScenario;
-    private XslScenario xspecResultHtmlConvertorScenario;
-
-    private boolean storeResultsInSubDir = true;
-    private boolean resultsSubDirWithTimeStamp = true;
-    private XPathExpression successXpath;
-    private XPathExpression testFailedCount;
-    private XPathExpression testCount;
-    private TestReport lastRunReport;
-
-    private DocumentBuilder xmlBuilder;
-    private File currentXspecFile;
-    private XslScenario currentXspecTestsScenario;
-
-    public XspecTestScenarioRunner(File xspecTestsGeneratorFile) {
-	super();
-	this.xspecTestsGeneratorScenario = new XslScenario(xspecTestsGeneratorFile);
-	init();
-    }
-
-    public XspecTestScenarioRunner(XslScenario xspecTestsGeneratorScenario) {
-	super();
-	this.xspecTestsGeneratorScenario = xspecTestsGeneratorScenario;
-	init();
-    }
-
-    private void init() {
-
-	XPath xpath = XPathFactory.newInstance().newXPath();
-
-	SimpleNamespaceContext namespaceContext = new SimpleNamespaceContext();
-	namespaceContext.bindNamespaceUri("x", "http://www.jenitennison.com/xslt/xspec");
-	xpath.setNamespaceContext(namespaceContext);
-
-	try {
-
-	    successXpath = xpath.compile("count(//x:test[@successful ='false'] ) = 0");
-	    testFailedCount = xpath.compile("count(//x:test[@successful ='false'] )");
-	    testCount = xpath.compile("count(//x:test)");
-	} catch (XPathExpressionException e) {
-	    logger.error("Error while initializing {}.", this.getClass().getName(), e);
+	static {
+		System.setProperty("javax.xml.transform.TransformerFactory", XslScenario.SAXON_TRANSFORMER_FACTORY_FQCN);
 	}
 
-	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-	docFactory.setNamespaceAware(true);
+	private File outputDir = new File(System.getProperty("java.io.tmpdir"));
+	private XslScenario xspecTestsGeneratorScenario;
+	private XslScenario xspecResultHtmlConvertorScenario;
 
-	try {
-	    xmlBuilder = docFactory.newDocumentBuilder();
-	} catch (ParserConfigurationException e) {
-	    logger.error("Error while configuring XML parser", e);
+	private boolean storeResultsInSubDir = true;
+	private boolean resultsSubDirWithTimeStamp = true;
+	private XPathExpression successXpath;
+	private XPathExpression testFailedCount;
+	private XPathExpression testCount;
+	private TestReport lastRunReport;
+
+	private DocumentBuilder xmlBuilder;
+	private File currentXspecFile;
+	private XslScenario currentXspecTestsScenario;
+
+	public XspecTestScenarioRunner(File xspecTestsGeneratorFile) {
+		super();
+		this.xspecTestsGeneratorScenario = new XslScenario(xspecTestsGeneratorFile);
+		init();
 	}
 
-    }
+	public XspecTestScenarioRunner(XslScenario xspecTestsGeneratorScenario) {
+		super();
+		this.xspecTestsGeneratorScenario = xspecTestsGeneratorScenario;
+		init();
+	}
 
-    public void reset() {
-	xspecTestsGeneratorScenario.getTransformer().reset();
-    }
+	private void init() {
 
-    public void setOutputDir(File outputDir) {
-	this.outputDir = outputDir;
+		XPath xpath = XPathFactory.newInstance().newXPath();
 
-    }
-
-    public File getOutputDir() {
-	return outputDir;
-    }
-
-    public TestReport getLastRunReport() {
-	return this.lastRunReport;
-    }
-
-    @Override
-    public TestReport run(File xspecFile) {
-	return run(xspecFile, outputDir, null);
-    }
-
-    @Override
-    public TestReport run(File xspecFile, File testOutputDir) {
-	return run(xspecFile, testOutputDir, null);
-    }
-
-    @Override
-    public TestReport run(File xspecFile, Document xmlDoc) {
-	return run(xspecFile, outputDir, xmlDoc);
-    }
-
-    /**
-     * 
-     * TODO add optional Document parameter
-     * 
-     * // TODO improve performance In order to improve performance, we should
-     * not regenerate/recompile xspec xsl. We should instead compile it once and
-     * change/set parameter (document URL) at each execution. This implies that
-     * we have to keep a compiled version of the Xsl for all runs of the
-     * testScenario with the same xspec file.
-     */
-    @Override
-    public TestReport run(File xspecFile, File outputDir, Document xmlDoc) {
-
-	this.outputDir = outputDir;
-
-	RunReport testRunReport = null;
-	TestReport testReport = new TestReport();
-
-	// Generate custom test XSL
-	RunReport generationReport = generateTestFile(xspecFile);
-	File generatedTestFile = generationReport.mainOutputFile;
-
-	if (generatedTestFile != null && generatedTestFile.exists()) {
-
-	    // Execute the xspec test
-	    testRunReport = executeTest(xspecFile, generatedTestFile, generationReport.outputProperties.getProperty("encoding"), xmlDoc);
-
-	    // Produce HTML report if transformation scenario provided
-	    if (xspecResultHtmlConvertorScenario != null) {
-		RunReport htmlrunReport = generateHtmlReport(testRunReport.mainOutputFile);
-
-		if (testRunReport != null) {
-		    testRunReport.otherOutputFiles.add(htmlrunReport.mainOutputFile);
-		}
-	    }
-
-	    if (testRunReport != null)
-
-	    {
-
-		testReport.executionTime = testRunReport.executionTime;
-		testReport.executionDate = testRunReport.executionDate;
-
-		testReport.success = getSuccess(testRunReport.mainOutputFile);
-
-		if (!testReport.success) {
-		    testReport.failureReport = getFailureReport(testRunReport.mainOutputFile);
-		}
-
-		if (testRunReport.otherOutputFiles.size() > 0) {
-		    try {
-			testReport.reportUrl = testRunReport.otherOutputFiles.get(0).toURI().toURL();
-		    } catch (MalformedURLException e) {
-			logger.error("Error while converting test report File to URL.", e);
-		    }
-		}
+		SimpleNamespaceContext namespaceContext = new SimpleNamespaceContext();
+		namespaceContext.bindNamespaceUri("x", "http://www.jenitennison.com/xslt/xspec");
+		xpath.setNamespaceContext(namespaceContext);
 
 		try {
 
-		    org.w3c.dom.Document xspecResultDoc = xmlBuilder.parse(testRunReport.mainOutputFile);
-
-		    testReport.testCount = ((Double) testCount.evaluate(xspecResultDoc, XPathConstants.NUMBER)).intValue();
-		    testReport.testFailedCount = ((Double) testFailedCount.evaluate(xspecResultDoc, XPathConstants.NUMBER)).intValue();
-
-		} catch (SAXException e) {
-		    logger.error("Error while creating failure report", e);
-		} catch (IOException e) {
-		    logger.error("Error while creating failure report", e);
+			successXpath = xpath.compile("count(//x:test[@successful ='false'] ) = 0");
+			testFailedCount = xpath.compile("count(//x:test[@successful ='false'] )");
+			testCount = xpath.compile("count(//x:test)");
 		} catch (XPathExpressionException e) {
-		    logger.error("Error while evaluating XPath during failure report creation", e);
+			logger.error("Error while initializing {}.", this.getClass().getName(), e);
 		}
 
-	    } else {
-		testReport.success = false;
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		docFactory.setNamespaceAware(true);
 
-	    }
-
-	} else {
-	    logger.error("Unable to find Xspec generated test file.");
-	}
-
-	return testReport;
-
-    }
-
-    private void addParamToGeneratedTestFile(File generatedTestFile, String encoding) {
-
-	// Ajouter <xsl:param name="docUrl" required="yes"/>
-	try {
-	    String fileString = FileUtils.readFileToString(generatedTestFile, encoding);
-
-	    // file:/jxslTestDocument => {$docUrl}
-	    String newContent = fileString.replaceAll(JXSL_TEST_HREF_PLACEHOLDER, "href=\"\\{\\$docUrl\\}\"");
-
-	    newContent = newContent.replaceAll(JXSL_TEST_SELECT_PLACEHOLDER, "doc\\(\\$docUrl\\)");
-	    newContent = newContent.replace("</xsl:stylesheet>", "<xsl:param name=\"docUrl\" required=\"yes\"/></xsl:stylesheet>");
-
-	    String generatedTestFilePath = generatedTestFile.getAbsolutePath();
-	    File newFile = new File(generatedTestFilePath + ".new");
-
-	    FileUtils.writeStringToFile(newFile, newContent, encoding);
-	    FileUtils.deleteQuietly(generatedTestFile);
-
-	    if (!newFile.renameTo(new File(generatedTestFilePath))) {
-		logger.error("Error while renaming {} to {}", newFile, generatedTestFilePath);
-	    }
-
-	} catch (IOException e) {
-	    logger.error("Error while replacing jxslTestDocument placeholder", e);
-	}
-
-    }
-
-    private RunReport generateHtmlReport(File xmlResultFile) {
-
-	RunReport runReport = new RunReport();
-
-	if (xspecResultHtmlConvertorScenario != null) {
-	    xspecResultHtmlConvertorScenario.getTransformer().reset();
-	    xspecResultHtmlConvertorScenario.setSaveOutputOnDisk(true);
-	    xspecResultHtmlConvertorScenario.setMainOutputDir(xmlResultFile.getParentFile());
-	    xspecResultHtmlConvertorScenario.setStoreResultsInSubDir(false);
-	    xspecResultHtmlConvertorScenario.setName("htmlConvertor");
-	    xspecResultHtmlConvertorScenario.setMainOutputName(xmlResultFile.getName().replace(".xml", ".html"));
-	    xspecResultHtmlConvertorScenario.apply(xmlResultFile);
-	    runReport = xspecResultHtmlConvertorScenario.getLastRunReport();
+		try {
+			xmlBuilder = docFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			logger.error("Error while configuring XML parser", e);
+		}
 
 	}
-	return runReport;
-    }
 
-    /**
-     * Execute xspec test
-     * 
-     * @param xspecFile
-     * @param generatedTestFile
-     * @param generatedTestFileEncoding
-     * @param xmlDoc
-     * @return
-     */
-    private RunReport executeTest(File xspecFile, File generatedTestFile, String generatedTestFileEncoding, Document xmlDoc) {
-
-	if (currentXspecFile == null || !currentXspecFile.getAbsolutePath().equals(xspecFile.getAbsolutePath())) {
-
-	    if (xmlDoc != null) {
-		addParamToGeneratedTestFile(generatedTestFile, generatedTestFileEncoding);
-	    }
-
-	    currentXspecTestsScenario = new XslScenario(generatedTestFile);
-	    currentXspecFile = xspecFile;
+	public void reset() {
+		xspecTestsGeneratorScenario.getTransformer().reset();
 	}
 
-	if (xmlDoc != null) {
-	    currentXspecTestsScenario.setParameter("docUrl", xmlDoc.getFile().getAbsolutePath());
+	public void setOutputDir(File outputDir) {
+		this.outputDir = outputDir;
+
 	}
 
-	currentXspecTestsScenario.getTransformer().reset();
-	currentXspecTestsScenario.setSaveOutputOnDisk(true);
-	currentXspecTestsScenario.setMainOutputDir(generatedTestFile.getParentFile());
-	currentXspecTestsScenario.setStoreResultsInSubDir(false);
-	currentXspecTestsScenario.setSaveRunReport(true);
-	currentXspecTestsScenario.setSaveXmlSource(true);
-	currentXspecTestsScenario.setMainOutputName(xspecFile.getName().replace(".xspec", "-result.xml"));
-	currentXspecTestsScenario.setInitialTemplate("{http://www.jenitennison.com/xslt/xspec}main");
-	currentXspecTestsScenario.setName(xspecFile.getName().replaceAll(".xspec", "_xspec"));
-
-	// FIXME xspecFile could be omitted since initialTemplate has been
-	// set? Create an apply() method without arg?
-	currentXspecTestsScenario.apply(xspecFile);
-
-	return currentXspecTestsScenario.getLastRunReport();
-    }
-
-    /**
-     * Generate test XSL
-     * 
-     * @param xspecFile
-     * @return
-     */
-    private RunReport generateTestFile(File xspecFile) {
-
-	xspecTestsGeneratorScenario.getTransformer().reset();
-
-	xspecTestsGeneratorScenario.setMainOutputDir(outputDir);
-
-	xspecTestsGeneratorScenario.setStoreResultsInSubDir(storeResultsInSubDir);
-
-	xspecTestsGeneratorScenario.setResultsSubDirWithTimeStamp(resultsSubDirWithTimeStamp);
-
-	xspecTestsGeneratorScenario.setName(xspecFile.getName().replace(".xspec", ""));
-
-	xspecTestsGeneratorScenario.setMainOutputName(xspecFile.getName().replace(".xspec", ".xslt"));
-
-	xspecTestsGeneratorScenario.setSaveOutputOnDisk(true);
-
-	xspecTestsGeneratorScenario.apply(xspecFile);
-
-	return xspecTestsGeneratorScenario.getLastRunReport();
-    }
-
-    public XslScenario getXspecTestsGeneratorScenario() {
-	return xspecTestsGeneratorScenario;
-    }
-
-    public void setXspecTestsGeneratorScenario(XslScenario xspecTestsGeneratorScenario) {
-	this.xspecTestsGeneratorScenario = xspecTestsGeneratorScenario;
-    }
-
-    public XslScenario getXspecResultHtmlConvertorScenario() {
-	return xspecResultHtmlConvertorScenario;
-    }
-
-    public void setXspecResultHtmlConvertorScenario(XslScenario xspecResultHtmlConvertorScenario) {
-	this.xspecResultHtmlConvertorScenario = xspecResultHtmlConvertorScenario;
-    }
-
-    public void cleanOutputDir() {
-	try {
-	    FileUtils.cleanDirectory(outputDir);
-	} catch (IOException e) {
-	    logger.equals(e);
+	public File getOutputDir() {
+		return outputDir;
 	}
 
-    }
-
-    public boolean isResultsSubDirWithTimeStamp() {
-	return resultsSubDirWithTimeStamp;
-    }
-
-    public void setResultsSubDirWithTimeStamp(boolean resultsSubDirWithTimeStamp) {
-	this.resultsSubDirWithTimeStamp = resultsSubDirWithTimeStamp;
-    }
-
-    public boolean isStoreResultsInSubDir() {
-	return storeResultsInSubDir;
-    }
-
-    public void setStoreResultsInSubDir(boolean storeResultsInSubDir) {
-	this.storeResultsInSubDir = storeResultsInSubDir;
-    }
-
-    private boolean getSuccess(File mainOutputFile) {
-	String success = "false";
-
-	try {
-	    success = successXpath.evaluate(new StreamSource(mainOutputFile));
-	} catch (XPathExpressionException e) {
-	    logger.error("Error while retrieving success/failure in test report {}", mainOutputFile, e);
+	public TestReport getLastRunReport() {
+		return this.lastRunReport;
 	}
 
-	return Boolean.parseBoolean(success);
-    }
+	@Override
+	public TestReport run(File xspecFile) {
+		return run(xspecFile, outputDir, null);
+	}
 
-    // TODO ????
-    private FailureReport getFailureReport(File mainOutputFile) {
-	FailureReport failureReport = new FailureReport("XSpec Test failed to run.  See error log.");
+	@Override
+	public TestReport run(File xspecFile, File testOutputDir) {
+		return run(xspecFile, testOutputDir, null);
+	}
 
-	return failureReport;
-    }
+	@Override
+	public TestReport run(File xspecFile, Document xmlDoc) {
+		return run(xspecFile, outputDir, xmlDoc);
+	}
+
+	/**
+	 * 
+	 * TODO add optional Document parameter
+	 * 
+	 * // TODO improve performance In order to improve performance, we should
+	 * not regenerate/recompile xspec xsl. We should instead compile it once and
+	 * change/set parameter (document URL) at each execution. This implies that
+	 * we have to keep a compiled version of the Xsl for all runs of the
+	 * testScenario with the same xspec file.
+	 */
+	@Override
+	public TestReport run(File xspecFile, File outputDir, Document xmlDoc) {
+
+		this.outputDir = outputDir;
+
+		RunReport testRunReport = null;
+		TestReport testReport = new TestReport();
+
+		// Generate custom test XSL
+		RunReport generationReport = generateTestFile(xspecFile);
+		File generatedTestFile = generationReport.mainOutputFile;
+
+		if (generatedTestFile != null && generatedTestFile.exists()) {
+
+			// Execute the xspec test
+			testRunReport = executeTest(xspecFile, generatedTestFile, generationReport.outputProperties.getProperty("encoding"), xmlDoc);
+
+			// Produce HTML report if transformation scenario provided
+			if (xspecResultHtmlConvertorScenario != null) {
+				RunReport htmlrunReport = generateHtmlReport(testRunReport.mainOutputFile);
+
+				if (testRunReport != null) {
+					testRunReport.otherOutputFiles.add(htmlrunReport.mainOutputFile);
+				}
+			}
+
+			if (testRunReport != null)
+
+			{
+
+				testReport.executionTime = testRunReport.executionTime;
+				testReport.executionDate = testRunReport.executionDate;
+
+				testReport.success = getSuccess(testRunReport.mainOutputFile);
+
+				if (!testReport.success) {
+					testReport.failureReport = getFailureReport(testRunReport.mainOutputFile);
+				}
+
+				if (testRunReport.otherOutputFiles.size() > 0) {
+					try {
+						testReport.reportUrl = testRunReport.otherOutputFiles.get(0).toURI().toURL();
+					} catch (MalformedURLException e) {
+						logger.error("Error while converting test report File to URL.", e);
+					}
+				}
+
+				try {
+
+					org.w3c.dom.Document xspecResultDoc = xmlBuilder.parse(testRunReport.mainOutputFile);
+
+					testReport.testCount = ((Double) testCount.evaluate(xspecResultDoc, XPathConstants.NUMBER)).intValue();
+					testReport.testFailedCount = ((Double) testFailedCount.evaluate(xspecResultDoc, XPathConstants.NUMBER)).intValue();
+
+				} catch (SAXException e) {
+					logger.error("Error while creating failure report", e);
+				} catch (IOException e) {
+					logger.error("Error while creating failure report", e);
+				} catch (XPathExpressionException e) {
+					logger.error("Error while evaluating XPath during failure report creation", e);
+				}
+
+			} else {
+				testReport.success = false;
+
+			}
+
+		} else {
+			logger.error("Unable to find Xspec generated test file.");
+		}
+
+		return testReport;
+
+	}
+
+	private void addParamToGeneratedTestFile(File generatedTestFile, String encoding) {
+
+		// Ajouter <xsl:param name="docUrl" required="yes"/>
+		try {
+			String fileString = FileUtils.readFileToString(generatedTestFile, encoding);
+
+			// file:/jxslTestDocument => {$docUrl}
+			String newContent = fileString.replaceAll(JXSL_TEST_HREF_PLACEHOLDER, "href=\"\\{\\$docUrl\\}\"");
+
+			newContent = newContent.replaceAll(JXSL_TEST_SELECT_PLACEHOLDER, "doc\\(\\$docUrl\\)");
+			newContent = newContent.replace("</xsl:stylesheet>", "<xsl:param name=\"docUrl\" required=\"yes\"/></xsl:stylesheet>");
+
+			String generatedTestFilePath = generatedTestFile.getAbsolutePath();
+			File newFile = new File(generatedTestFilePath + ".new");
+
+			FileUtils.writeStringToFile(newFile, newContent, encoding);
+			FileUtils.deleteQuietly(generatedTestFile);
+
+			if (!newFile.renameTo(new File(generatedTestFilePath))) {
+				logger.error("Error while renaming {} to {}", newFile, generatedTestFilePath);
+			}
+
+		} catch (IOException e) {
+			logger.error("Error while replacing jxslTestDocument placeholder", e);
+		}
+
+	}
+
+	private RunReport generateHtmlReport(File xmlResultFile) {
+
+		RunReport runReport = new RunReport();
+
+		if (xspecResultHtmlConvertorScenario != null) {
+			xspecResultHtmlConvertorScenario.getTransformer().reset();
+			xspecResultHtmlConvertorScenario.setSaveOutputOnDisk(true);
+			xspecResultHtmlConvertorScenario.setMainOutputDir(xmlResultFile.getParentFile());
+			xspecResultHtmlConvertorScenario.setStoreResultsInSubDir(false);
+			xspecResultHtmlConvertorScenario.setName("htmlConvertor");
+			xspecResultHtmlConvertorScenario.setMainOutputName(xmlResultFile.getName().replace(".xml", ".html"));
+			xspecResultHtmlConvertorScenario.apply(xmlResultFile);
+			runReport = xspecResultHtmlConvertorScenario.getLastRunReport();
+
+		}
+		return runReport;
+	}
+
+	/**
+	 * Execute xspec test
+	 * 
+	 * @param xspecFile
+	 * @param generatedTestFile
+	 * @param generatedTestFileEncoding
+	 * @param xmlDoc
+	 * @return
+	 */
+	private RunReport executeTest(File xspecFile, File generatedTestFile, String generatedTestFileEncoding, Document xmlDoc) {
+
+		if (currentXspecFile == null || !currentXspecFile.getAbsolutePath().equals(xspecFile.getAbsolutePath())) {
+
+			if (xmlDoc != null) {
+				addParamToGeneratedTestFile(generatedTestFile, generatedTestFileEncoding);
+			}
+
+			currentXspecTestsScenario = new XslScenario(generatedTestFile);
+			currentXspecFile = xspecFile;
+		}
+
+		if (xmlDoc != null) {
+			currentXspecTestsScenario.setParameter("docUrl", xmlDoc.getFile().getAbsolutePath());
+		}
+
+		currentXspecTestsScenario.getTransformer().reset();
+		currentXspecTestsScenario.setSaveOutputOnDisk(true);
+		currentXspecTestsScenario.setMainOutputDir(generatedTestFile.getParentFile());
+		currentXspecTestsScenario.setStoreResultsInSubDir(false);
+		currentXspecTestsScenario.setSaveRunReport(true);
+		currentXspecTestsScenario.setSaveXmlSource(true);
+		currentXspecTestsScenario.setMainOutputName(xspecFile.getName().replace(".xspec", "-result.xml"));
+		currentXspecTestsScenario.setInitialTemplate("{http://www.jenitennison.com/xslt/xspec}main");
+		currentXspecTestsScenario.setName(xspecFile.getName().replaceAll(".xspec", "_xspec"));
+
+		// FIXME xspecFile could be omitted since initialTemplate has been
+		// set? Create an apply() method without arg?
+		currentXspecTestsScenario.apply(xspecFile);
+
+		return currentXspecTestsScenario.getLastRunReport();
+	}
+
+	/**
+	 * Generate test XSL
+	 * 
+	 * @param xspecFile
+	 * @return
+	 */
+	private RunReport generateTestFile(File xspecFile) {
+
+		xspecTestsGeneratorScenario.getTransformer().reset();
+
+		xspecTestsGeneratorScenario.setMainOutputDir(outputDir);
+
+		xspecTestsGeneratorScenario.setStoreResultsInSubDir(storeResultsInSubDir);
+
+		xspecTestsGeneratorScenario.setResultsSubDirWithTimeStamp(resultsSubDirWithTimeStamp);
+
+		xspecTestsGeneratorScenario.setName(xspecFile.getName().replace(".xspec", ""));
+
+		xspecTestsGeneratorScenario.setMainOutputName(xspecFile.getName().replace(".xspec", ".xslt"));
+
+		xspecTestsGeneratorScenario.setSaveOutputOnDisk(true);
+
+		xspecTestsGeneratorScenario.apply(xspecFile);
+
+		return xspecTestsGeneratorScenario.getLastRunReport();
+	}
+
+	public XslScenario getXspecTestsGeneratorScenario() {
+		return xspecTestsGeneratorScenario;
+	}
+
+	public void setXspecTestsGeneratorScenario(XslScenario xspecTestsGeneratorScenario) {
+		this.xspecTestsGeneratorScenario = xspecTestsGeneratorScenario;
+	}
+
+	public XslScenario getXspecResultHtmlConvertorScenario() {
+		return xspecResultHtmlConvertorScenario;
+	}
+
+	public void setXspecResultHtmlConvertorScenario(XslScenario xspecResultHtmlConvertorScenario) {
+		this.xspecResultHtmlConvertorScenario = xspecResultHtmlConvertorScenario;
+	}
+
+	public void cleanOutputDir() {
+		try {
+			FileUtils.cleanDirectory(outputDir);
+		} catch (IOException e) {
+			logger.equals(e);
+		}
+
+	}
+
+	public boolean isResultsSubDirWithTimeStamp() {
+		return resultsSubDirWithTimeStamp;
+	}
+
+	public void setResultsSubDirWithTimeStamp(boolean resultsSubDirWithTimeStamp) {
+		this.resultsSubDirWithTimeStamp = resultsSubDirWithTimeStamp;
+	}
+
+	public boolean isStoreResultsInSubDir() {
+		return storeResultsInSubDir;
+	}
+
+	public void setStoreResultsInSubDir(boolean storeResultsInSubDir) {
+		this.storeResultsInSubDir = storeResultsInSubDir;
+	}
+
+	private boolean getSuccess(File mainOutputFile) {
+		String success = "false";
+
+		try {
+			success = successXpath.evaluate(new StreamSource(mainOutputFile));
+		} catch (XPathExpressionException e) {
+			logger.error("Error while retrieving success/failure in test report {}", mainOutputFile, e);
+		}
+
+		return Boolean.parseBoolean(success);
+	}
+
+	// TODO ????
+	private FailureReport getFailureReport(File mainOutputFile) {
+		FailureReport failureReport = new FailureReport("XSpec Test failed to run.  See error log.");
+
+		return failureReport;
+	}
 
 }
