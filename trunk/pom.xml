@@ -13,7 +13,7 @@
 
 	<groupId>com.servicelibre</groupId>
 	<artifactId>jxsl</artifactId>
-	<version>0.1.12-SNAPSHOT</version>
+	<version>0.1.11-SNAPSHOT</version>
 
 	<name>jxsl</name>
 	<description>Java XSL code library</description>
@@ -26,10 +26,11 @@
 	</properties>
 
 	<!-- Source code versionning system -->
+
 	<scm>
-		<connection>scm:svn:http://jxsl.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://jxsl.googlecode.com/svn/trunk</developerConnection>
-		<url>http://code.google.com/p/jxsl/source/browse/trunk</url>
+		<connection>scm:svn:http://jxsl.googlecode.com/svn</connection>
+		<developerConnection>scm:svn:https://jxsl.googlecode.com/svn</developerConnection>
+		<url>http://code.google.com/p/jxsl/source/browse</url>
 	</scm>
 
 	<!-- Project details -->
