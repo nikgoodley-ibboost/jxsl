@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>com.servicelibre</groupId>
 			<artifactId>jxsl</artifactId>
-			<version>0.1.7</version>
+			<version>0.1.9</version>
 		</dependency>
 		<!-- 
 		   Saxon: external dependency: cf. Michael Kay - There is no authorised 
