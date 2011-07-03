@@ -28,9 +28,9 @@
 	<!-- Source code versionning system -->
 
 	<scm>
-		<connection>scm:svn:http://jxsl.googlecode.com/svn/tags/jxsl-0.1.0</connection>
-		<developerConnection>scm:svn:https://jxsl.googlecode.com/svn/tags/jxsl-0.1.0</developerConnection>
-		<url>http://code.google.com/p/jxsl/source/browse/tags/jxsl-0.1.0</url>
+		<connection>scm:svn:http://jxsl.googlecode.com/svn</connection>
+		<developerConnection>scm:svn:https://jxsl.googlecode.com/svn</developerConnection>
+		<url>http://code.google.com/p/jxsl/source/browse</url>
 	</scm>
 
 	<!-- Project details -->
