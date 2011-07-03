@@ -9,7 +9,7 @@
 
   <groupId>com.servicelibre</groupId>
   <artifactId>xspec-test</artifactId>
-  <version>0.1.6-SNAPSHOT</version>
+  <version>0.1.7</version>
   <packaging>maven-archetype</packaging>
 
   <name>jxsl-archetype</name>
@@ -17,9 +17,9 @@
 	<!-- Source code versionning system -->
 
 	<scm>
-		<connection>scm:svn:http://jxsl.googlecode.com/svn</connection>
-		<developerConnection>scm:svn:https://jxsl.googlecode.com/svn</developerConnection>
-		<url>http://code.google.com/p/jxsl/source/browse</url>
+		<connection>scm:svn:http://jxsl.googlecode.com/svn/tags/xspec-test-0.1.7</connection>
+		<developerConnection>scm:svn:https://jxsl.googlecode.com/svn/tags/xspec-test-0.1.7</developerConnection>
+		<url>http://code.google.com/p/jxsl/source/browse/tags/xspec-test-0.1.7</url>
 	</scm>
 	
 	<!-- Project details -->
