@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,11 +35,15 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFactoryConfigurationException;
+
+import net.sf.saxon.lib.NamespaceConstant;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.xml.SimpleNamespaceContext;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.servicelibre.jxsl.dstest.Document;
@@ -60,6 +66,8 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
 	static {
 		System.setProperty("javax.xml.transform.TransformerFactory", XslScenario.SAXON_TRANSFORMER_FACTORY_FQCN);
+		System.setProperty("javax.xml.xpath.XPathFactory:"+NamespaceConstant.OBJECT_MODEL_SAXON, "net.sf.saxon.xpath.XPathFactoryImpl");
+
 	}
 
 	private File outputDir = new File(System.getProperty("java.io.tmpdir"));
@@ -91,7 +99,13 @@ public class XspecTestScenarioRunner implements XslTestScenarioRunner {
 
 	private void init() {
 
-		XPath xpath = XPathFactory.newInstance().newXPath();
+		XPath xpath = null;
+		try {
+			xpath = XPathFactory.newInstance(NamespaceConstant.OBJECT_MODEL_SAXON).newXPath();
+		} catch (XPathFactoryConfigurationException e1) {
+			logger.error("Error while creating XPathFactory",e1);
+			return;
+		}
 
 		SimpleNamespaceContext namespaceContext = new SimpleNamespaceContext();
 		namespaceContext.bindNamespaceUri("x", "http://www.jenitennison.com/xslt/xspec");
