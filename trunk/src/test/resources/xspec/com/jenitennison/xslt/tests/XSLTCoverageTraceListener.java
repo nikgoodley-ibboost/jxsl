@@ -7,9 +7,9 @@
 /* ------------------------------------------------------------------------ */
 
 
-package com.jenitennison.xslt.tests;
+package xspec.com.jenitennison.xslt.tests;
 
-import net.sf.saxon.trace.TraceListener;
+import net.sf.saxon.lib.TraceListener;
 import net.sf.saxon.trace.InstructionInfo;
 import net.sf.saxon.trace.Location;
 import net.sf.saxon.expr.XPathContext;
